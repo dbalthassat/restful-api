@@ -9,7 +9,7 @@ import org.springframework.context.annotation.ComponentScan;
 
 @EnableConfigurationProperties
 @SpringBootApplication
-@ComponentScan({"com.dbalthassat.quizrc.config"})
+@ComponentScan({"com.dbalthassat.quizrc.config", "com.dbalthassat.quizrc.controller"})
 public class Application extends SpringBootServletInitializer {
     /**
      * Start the web app on a Spring Boot's embedded Tomcat.

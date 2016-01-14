@@ -1,24 +1,29 @@
 package com.dbalthassat.quizrc.entity;
 
-public class Greeting implements Searchable {
-    private final long id;
-    private final String content;
+public class Greeting implements Entity {
+    private long id;
+    private String name;
 
-    public Greeting(long id, String content) {
+    @SuppressWarnings("unused")
+    public Greeting() {
+
+    }
+
+    public Greeting(long id, String name) {
         this.id = id;
-        this.content = content;
+        this.name = name;
     }
 
     public long getId() {
         return id;
     }
 
-    public String getContent() {
-        return content;
+    public String getName() {
+        return name;
     }
 
     @Override
-    public String queryParameter() {
-        return content;
+    public String queryValue() {
+        return name;
     }
 }
