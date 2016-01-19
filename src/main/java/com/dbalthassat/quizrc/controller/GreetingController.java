@@ -70,7 +70,7 @@ public class GreetingController {
         return bdd.remove(id);
     }
 
-    private Greeting findGreeting(@PathVariable(value = "id") Long id) {
+    private Greeting findGreeting(Long id) {
         Optional<Greeting> op = Optional.ofNullable(bdd.get(id));
         return op.orElseThrow(IllegalArgumentException::new); // TODO 404
     }

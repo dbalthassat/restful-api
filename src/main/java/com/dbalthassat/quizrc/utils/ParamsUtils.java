@@ -18,6 +18,8 @@ import java.util.stream.Stream;
 public class ParamsUtils {
     private final static Logger LOGGER = LoggerFactory.getLogger(ParamsUtils.class);
 
+    private ParamsUtils() {}
+
     public static <T extends Entity, E extends T> List<T> apply(Map<String, String[]> parameterMap, List<E> values) {
         Params<T> params  = parseParams(parameterMap, values.get(0).getClass());
         Stream<E> stream = values.stream();
@@ -25,7 +27,7 @@ public class ParamsUtils {
             stream = stream.filter(filter);
         }
         if(params.getQuery().isPresent()) {
-            stream = stream.filter(e -> e.queryValue().contains(params.getQuery().get()));
+            stream = stream.filter(e -> e.query(params.getQuery().get()));
         }
         return stream.collect(Collectors.toList());
     }
@@ -34,22 +36,15 @@ public class ParamsUtils {
         List<Predicate<T>> filters = handleFilters(parameterMap, clazz);
         handleSort(parameterMap.get("sort"));
         Optional<String> query = handleQuery(parameterMap.get("q"));
-
-        // TODO transformer parameterMap en filters
-        Params<T> params = new Params<>(filters, query);
-        return params;
+        return new Params<>(filters, query);
     }
 
     private static Optional<String> handleQuery(String[] q) {
-        Optional<String> result;
-        if(q == null || q.length == 0) {
-            result = Optional.empty();
-        } else if(q.length > 1) {
-            throw new IllegalParameterException("The parameter q accept only one value.");
-        } else {
-            result = Optional.of(q[0]);
+        try {
+            return ArrayUtils.findFirstElement(q);
+        } catch(IllegalArgumentException e) {
+            throw new IllegalParameterException("The parameter q accepts only one value.");
         }
-        return result;
     }
 
     // TODO gérer les tris

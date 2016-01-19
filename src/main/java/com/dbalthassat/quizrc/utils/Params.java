@@ -13,10 +13,6 @@ public class Params<T> {
         this.query = query;
     }
 
-    public Params(List<Predicate<T>> filters) {
-        this(filters, Optional.empty());
-    }
-
     public List<Predicate<T>> getFilters() {
         return filters;
     }
