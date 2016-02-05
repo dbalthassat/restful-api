@@ -41,6 +41,7 @@ public class GreetingController implements ExceptionController {
 
     @RequestMapping(value = "/{id}", method = RequestMethod.GET)
     @ResponseBody
+    // TODO voir comment gérer lorsque l'entrée ne respecte pas le format voulu
     public Greeting get(@PathVariable(value = "id") Long id) {
         return findGreeting(id);
     }

@@ -1,12 +1,14 @@
 package com.dbalthassat.quizrc.entity;
 
+import org.springframework.http.HttpStatus;
+
 public class ExceptionEntity {
     private String message;
-    private int statusCode;
+    private HttpStatus httpStatus;
 
-    public ExceptionEntity(String message, int statusCode) {
+    public ExceptionEntity(String message, HttpStatus httpStatus) {
         this.message = message;
-        this.statusCode = statusCode;
+        this.httpStatus = httpStatus;
     }
 
     public String getMessage() {
@@ -17,11 +19,11 @@ public class ExceptionEntity {
         this.message = message;
     }
 
-    public int getStatusCode() {
-        return statusCode;
+    public HttpStatus getHttpStatus() {
+        return httpStatus;
     }
 
-    public void setStatusCode(int statusCode) {
-        this.statusCode = statusCode;
+    public void setHttpStatus(HttpStatus httpStatus) {
+        this.httpStatus = httpStatus;
     }
 }

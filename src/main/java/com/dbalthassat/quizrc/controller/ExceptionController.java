@@ -18,12 +18,12 @@ public interface ExceptionController {
     @ExceptionHandler(HttpStatusException.class)
     default ExceptionEntity exceptionHandler(HttpStatusException e) {
         LOGGER.info(String.format("The following error occured: %s", e.getMessage()), e);
-        return new ExceptionEntity(e.getMessage(), e.httpStatus().value());
+        return new ExceptionEntity(e.getMessage(), e.httpStatus());
     }
 
     @ExceptionHandler(Throwable.class)
     default ExceptionEntity exceptionHandler(Throwable e) {
         LOGGER.warn(e.getMessage(), e);
-        return new ExceptionEntity(e.getMessage(), HttpStatus.BAD_REQUEST.value());
+        return new ExceptionEntity(e.getMessage(), HttpStatus.BAD_REQUEST);
     }
 }
