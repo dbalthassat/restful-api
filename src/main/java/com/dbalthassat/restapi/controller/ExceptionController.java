@@ -1,7 +1,7 @@
-package com.dbalthassat.quizrc.controller;
+package com.dbalthassat.restapi.controller;
 
-import com.dbalthassat.quizrc.entity.ExceptionEntity;
-import com.dbalthassat.quizrc.exception.HttpStatusException;
+import com.dbalthassat.restapi.entity.ExceptionEntity;
+import com.dbalthassat.restapi.exception.HttpStatusException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;

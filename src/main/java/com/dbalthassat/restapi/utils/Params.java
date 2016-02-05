@@ -1,4 +1,4 @@
-package com.dbalthassat.quizrc.utils;
+package com.dbalthassat.restapi.utils;
 
 import java.util.List;
 import java.util.Optional;

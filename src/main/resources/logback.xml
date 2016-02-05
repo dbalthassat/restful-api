@@ -10,7 +10,7 @@
     <root level="WARN">
         <appender-ref ref="console" />
     </root>
-    <logger name="com.dbalthassat.quizrc" level="DEBUG" additivity="false">
+    <logger name="com.dbalthassat.restapi" level="DEBUG" additivity="false">
         <appender-ref ref="console" />
     </logger>
 </configuration>

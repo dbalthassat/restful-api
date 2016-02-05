@@ -1,4 +1,4 @@
-package com.dbalthassat.quizrc.config;
+package com.dbalthassat.restapi.config;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -9,7 +9,7 @@ import org.springframework.context.annotation.ComponentScan;
 
 @EnableConfigurationProperties
 @SpringBootApplication
-@ComponentScan({"com.dbalthassat.quizrc.config", "com.dbalthassat.quizrc.controller"})
+@ComponentScan({"com.dbalthassat.restapi.config", "com.dbalthassat.restapi.controller"})
 public class Application extends SpringBootServletInitializer {
     /**
      * Start the web app on a Spring Boot's embedded Tomcat.

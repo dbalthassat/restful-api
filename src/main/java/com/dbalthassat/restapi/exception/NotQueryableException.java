@@ -1,4 +1,4 @@
-package com.dbalthassat.quizrc.exception;
+package com.dbalthassat.restapi.exception;
 
 public class NotQueryableException extends BadRequestException {
     public NotQueryableException(String message) {

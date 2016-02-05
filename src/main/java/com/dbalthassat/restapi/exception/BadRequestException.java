@@ -1,4 +1,4 @@
-package com.dbalthassat.quizrc.exception;
+package com.dbalthassat.restapi.exception;
 
 import org.springframework.http.HttpStatus;
 

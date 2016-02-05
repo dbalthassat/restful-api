@@ -1,8 +1,8 @@
-package com.dbalthassat.quizrc.controller;
+package com.dbalthassat.restapi.controller;
 
-import com.dbalthassat.quizrc.entity.Greeting;
-import com.dbalthassat.quizrc.exception.NotFoundException;
-import com.dbalthassat.quizrc.utils.ParamsUtils;
+import com.dbalthassat.restapi.entity.Greeting;
+import com.dbalthassat.restapi.exception.NotFoundException;
+import com.dbalthassat.restapi.utils.ParamsUtils;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.PostConstruct;

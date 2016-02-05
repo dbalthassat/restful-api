@@ -1,7 +1,7 @@
-package com.dbalthassat.quizrc.utils;
+package com.dbalthassat.restapi.utils;
 
-import com.dbalthassat.quizrc.entity.Entity;
-import com.dbalthassat.quizrc.exception.IllegalParameterException;
+import com.dbalthassat.restapi.entity.Entity;
+import com.dbalthassat.restapi.exception.IllegalParameterException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

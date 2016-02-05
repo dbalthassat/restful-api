@@ -1,6 +1,6 @@
-package com.dbalthassat.quizrc.entity;
+package com.dbalthassat.restapi.entity;
 
-import com.dbalthassat.quizrc.exception.NotQueryableException;
+import com.dbalthassat.restapi.exception.NotQueryableException;
 
 /**
  * This interface should be implemented by objects which are queryable. This means the API will accept

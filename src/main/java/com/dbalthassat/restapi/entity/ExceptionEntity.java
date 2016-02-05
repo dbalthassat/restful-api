@@ -1,4 +1,4 @@
-package com.dbalthassat.quizrc.entity;
+package com.dbalthassat.restapi.entity;
 
 import org.springframework.http.HttpStatus;
 
