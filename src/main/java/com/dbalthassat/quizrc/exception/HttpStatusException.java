@@ -11,5 +11,9 @@ abstract class HttpStatusException extends RuntimeException {
         super(message, cause);
     }
 
+    public HttpStatusException() {
+        super();
+    }
+
     public abstract HttpStatus httpStatus();
 }

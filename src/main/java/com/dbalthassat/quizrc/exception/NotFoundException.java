@@ -11,6 +11,10 @@ public class NotFoundException extends HttpStatusException {
         super(message, cause);
     }
 
+    public NotFoundException() {
+        super();
+    }
+
     @Override
     public HttpStatus httpStatus() {
         return HttpStatus. NOT_FOUND;

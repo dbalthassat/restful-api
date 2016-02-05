@@ -1,6 +1,7 @@
 package com.dbalthassat.quizrc.controller;
 
 import com.dbalthassat.quizrc.entity.Greeting;
+import com.dbalthassat.quizrc.exception.NotFoundException;
 import com.dbalthassat.quizrc.utils.ParamsUtils;
 import org.springframework.web.bind.annotation.*;
 
@@ -15,7 +16,6 @@ import java.util.concurrent.atomic.AtomicLong;
 public class GreetingController {
     private static final String template = "Hello, %s!";
 
-    // TODO vérifier que le AtomicLong est nécessaire.
     private final AtomicLong counter = new AtomicLong();
 
     /**
@@ -72,7 +72,7 @@ public class GreetingController {
 
     private Greeting findGreeting(Long id) {
         Optional<Greeting> op = Optional.ofNullable(bdd.get(id));
-        return op.orElseThrow(IllegalArgumentException::new); // TODO 404
+        return op.orElseThrow(NotFoundException::new);
     }
 
     // TODO à externaliser dans un service
