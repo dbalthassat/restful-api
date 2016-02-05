@@ -53,40 +53,58 @@ public class ParamsUtils {
     }
 
     // TODO gérer les objets imbriqués
-    // TODO refactorer ce code dégueulasse
     private static <T extends Entity> List<Predicate<T>> handleFilters(Map<String, String[]> parameterMap, Class<? extends Entity> clazz) {
-        String[] prefixes = {"get", "is"}; // TODO paramétrer cela
-
         return parameterMap.entrySet().stream()
                 .filter(e -> !"sort".equals(e.getKey()) && !"q".equals(e.getKey())) // TODO faire ce filtre en amont
-                .map(parameterEntry -> {
-                    String fieldName = parameterEntry.getKey();
-                    String[] params = parameterEntry.getValue();
-                    Method method = Arrays.stream(clazz.getDeclaredMethods())
-                            .filter(e -> e.getName().equals(fieldName)) // TODO prendre en compte les préfixes
-                            .findFirst()
-                            .orElseThrow(() -> new IllegalParameterException("The filter {} cannot be apply.")); // TODO ajouter le paramètre
-                    Predicate<T> condition = t -> false;
-                    for(String param: params) {
-                        condition = condition.or(t -> {
-                            try {
-                                Object value = method.invoke(t);
-                                if(value instanceof String) {
-                                    String v = (String) value;
-                                    return param.equals(v);
-                                } else if(value instanceof Enum<?>) {
-                                    Enum<?> v = (Enum<?>) value;
-                                    return param.equals(v.name());
-                                }
-                            } catch (IllegalAccessException | InvocationTargetException e) {
-                                // Should not happen.
-                                LOGGER.error(e.getMessage(), e);
-                            }
-                            // If this error occurs, we do not apply this filter.
-                            return true;
-                        });
-                    }
-                    return condition;
-                }).collect(Collectors.toList());
+                .map(parameterEntry -> ParamsUtils.<T>buildFilter(clazz, parameterEntry)).collect(Collectors.toList());
+    }
+
+    private static <T extends Entity> Predicate<T> buildFilter(Class<? extends Entity> clazz, Map.Entry<String, String[]> parameterEntry) {
+        String fieldName = parameterEntry.getKey();
+        String[] params = parameterEntry.getValue();
+        Method getter = buildGetter(clazz, fieldName);
+        Predicate<T> condition = t -> false;
+        for(String param: params) {
+            condition = buildCondition(getter, condition, param);
+        }
+        return condition;
+    }
+
+    private static <T extends Entity> Predicate<T> buildCondition(Method getter, Predicate<T> condition, String param) {
+        return condition.or(t -> {
+            try {
+                Optional<Boolean> value = findConditionDependingOnType(getter, param, t);
+                if(value.isPresent()) {
+                    return value.get();
+                }
+            } catch (IllegalAccessException | InvocationTargetException e) {
+                // Should not happen.
+                LOGGER.error(e.getMessage(), e);
+            }
+            // If this error occurs, we do not apply this filter.
+            return true;
+        });
+    }
+
+    private static <T extends Entity> Optional<Boolean> findConditionDependingOnType(Method getter, String param, T t) throws IllegalAccessException, InvocationTargetException {
+        Object value = getter.invoke(t);
+        Optional<Boolean> result = Optional.empty();
+        if(value instanceof String) {
+            result = Optional.of(param.equals(value));
+        } else if(value instanceof Enum<?>) {
+            result = Optional.of(param.equals(((Enum<?>) value).name()));
+        }
+        return result;
+    }
+
+    private static Method buildGetter(Class<? extends Entity> clazz, String fieldName) {
+        return Arrays.stream(clazz.getDeclaredMethods())
+                    .filter(isGetter(fieldName))
+                    .findFirst()
+                    .orElseThrow(() -> new IllegalParameterException("The filter %s cannot be apply.", fieldName));
+    }
+
+    private static Predicate<Method> isGetter(String fieldName) {
+        return e -> StringUtils.isGetter(fieldName, e);
     }
 }
