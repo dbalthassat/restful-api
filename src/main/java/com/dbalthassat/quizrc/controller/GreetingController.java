@@ -13,7 +13,7 @@ import java.util.concurrent.atomic.AtomicLong;
 @RestController
 @RequestMapping("/greetings")
 // TODO versioning, cf http://www.vinaysahni.com/best-practices-for-a-pragmatic-restful-api
-public class GreetingController {
+public class GreetingController implements ExceptionController {
     private static final String template = "Hello, %s!";
 
     private final AtomicLong counter = new AtomicLong();
@@ -72,7 +72,7 @@ public class GreetingController {
 
     private Greeting findGreeting(Long id) {
         Optional<Greeting> op = Optional.ofNullable(bdd.get(id));
-        return op.orElseThrow(NotFoundException::new);
+        return op.orElseThrow(() -> new NotFoundException(String.format("Greeting %d not found.", id)));
     }
 
     // TODO à externaliser dans un service

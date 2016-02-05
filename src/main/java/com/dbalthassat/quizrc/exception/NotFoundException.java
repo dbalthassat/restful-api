@@ -12,11 +12,11 @@ public class NotFoundException extends HttpStatusException {
     }
 
     public NotFoundException() {
-        super();
+        this("Item not found");
     }
 
     @Override
     public HttpStatus httpStatus() {
-        return HttpStatus. NOT_FOUND;
+        return HttpStatus.NOT_FOUND;
     }
 }

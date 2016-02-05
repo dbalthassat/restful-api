@@ -11,6 +11,10 @@ public class BadRequestException extends HttpStatusException {
         super(message, cause);
     }
 
+    public BadRequestException() {
+        this("Bad request");
+    }
+
     @Override
     public HttpStatus httpStatus() {
         return HttpStatus.BAD_REQUEST;

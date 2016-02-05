@@ -2,7 +2,7 @@ package com.dbalthassat.quizrc.exception;
 
 import org.springframework.http.HttpStatus;
 
-abstract class HttpStatusException extends RuntimeException {
+public abstract class HttpStatusException extends RuntimeException {
     public HttpStatusException(String message) {
         super(message);
     }
