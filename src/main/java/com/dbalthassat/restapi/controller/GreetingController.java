@@ -13,7 +13,7 @@ import java.util.concurrent.atomic.AtomicLong;
 @RestController
 @RequestMapping("/greetings")
 // TODO versioning, cf http://www.vinaysahni.com/best-practices-for-a-pragmatic-restful-api
-public class GreetingController implements ExceptionController {
+public class GreetingController {
     private static final String template = "Hello, %s!";
 
     private final AtomicLong counter = new AtomicLong();
@@ -39,7 +39,7 @@ public class GreetingController implements ExceptionController {
         return ParamsUtils.apply(request.getParameterMap(), new LinkedList<>(bdd.values()));
     }
 
-    @RequestMapping(value = "/{id}", method = RequestMethod.GET)
+    @RequestMapping(value = "/{id:[0-9]+}", method = RequestMethod.GET)
     @ResponseBody
     // TODO voir comment gérer lorsque l'entrée ne respecte pas le format voulu
     public Greeting get(@PathVariable(value = "id") Long id) {
@@ -57,14 +57,14 @@ public class GreetingController implements ExceptionController {
     }
 
     // TODO voir si PATCH est bien implémenté
-    @RequestMapping(value = "/{id}", method = { RequestMethod.PUT, RequestMethod.PATCH })
+    @RequestMapping(value = "/{id:[0-9]+}", method = { RequestMethod.PUT, RequestMethod.PATCH })
     @ResponseBody
     public Greeting put(@PathVariable(value = "id") Long id, @RequestParam(value = "name") String name) {
         findGreeting(id);
         return createOrUpdateGreeting(id, String.format(template, name));
     }
 
-    @RequestMapping(value = "/{id}", method = RequestMethod.DELETE)
+    @RequestMapping(value = "/{id:[0-9]+}", method = RequestMethod.DELETE)
     @ResponseBody
     public Greeting delete(@PathVariable(value = "id") Long id) {
         findGreeting(id);

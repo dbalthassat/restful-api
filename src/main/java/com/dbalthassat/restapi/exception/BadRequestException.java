@@ -2,7 +2,7 @@ package com.dbalthassat.restapi.exception;
 
 import org.springframework.http.HttpStatus;
 
-public class BadRequestException extends HttpStatusException {
+public class BadRequestException extends ApiException {
     public BadRequestException(String message) {
         super(message);
     }
@@ -15,8 +15,12 @@ public class BadRequestException extends HttpStatusException {
         this("Bad request");
     }
 
+    public int code() {
+        return ExceptionCode.BAD_REQUEST.code();
+    }
+
     @Override
-    public HttpStatus httpStatus() {
+    public HttpStatus status() {
         return HttpStatus.BAD_REQUEST;
     }
 }

@@ -2,9 +2,9 @@ package com.dbalthassat.restapi.exception;
 
 import org.springframework.http.HttpStatus;
 
-public class NotFoundException extends HttpStatusException {
-    public NotFoundException(String message) {
-        super(message);
+public class NotFoundException extends ApiException {
+    public NotFoundException(String message, Object... params) {
+        super(String.format(message, params));
     }
 
     public NotFoundException(String message, Throwable cause) {
@@ -16,7 +16,12 @@ public class NotFoundException extends HttpStatusException {
     }
 
     @Override
-    public HttpStatus httpStatus() {
+    public int code() {
+        return ExceptionCode.NOT_FOUND.code();
+    }
+
+    @Override
+    public HttpStatus status() {
         return HttpStatus.NOT_FOUND;
     }
 }
