@@ -33,9 +33,11 @@ public class ParamsUtils {
     }
 
     private static <T extends Entity> Params<T> parseParams(Map<String, String[]> parameterMap, Class<? extends Entity> clazz) {
+        String[] sort = parameterMap.remove("sort");
+        String[] q = parameterMap.remove("q");
         List<Predicate<T>> filters = handleFilters(parameterMap, clazz);
-        handleSort(parameterMap.get("sort"));
-        Optional<String> query = handleQuery(parameterMap.get("q"));
+        Optional<String> query = handleQuery(q);
+        handleSort(sort);
         return new Params<>(filters, query);
     }
 
@@ -55,7 +57,6 @@ public class ParamsUtils {
     // TODO gérer les objets imbriqués
     private static <T extends Entity> List<Predicate<T>> handleFilters(Map<String, String[]> parameterMap, Class<? extends Entity> clazz) {
         return parameterMap.entrySet().stream()
-                .filter(e -> !"sort".equals(e.getKey()) && !"q".equals(e.getKey())) // TODO faire ce filtre en amont
                 .map(parameterEntry -> ParamsUtils.<T>buildFilter(clazz, parameterEntry)).collect(Collectors.toList());
     }
 
