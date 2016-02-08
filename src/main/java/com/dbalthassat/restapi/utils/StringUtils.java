@@ -13,17 +13,17 @@ public class StringUtils {
         return first + builder.toString();
     }
 
-    public static String capitalizeFirstLetter(String e) {
-        if(e == null || e.isEmpty()) {
+    public static String capitalizeFirstLetter(String str) {
+        if(str == null || str.isEmpty()) {
             throw new IllegalArgumentException("The string cannot be empty.");
         }
-        return e.substring(0, 1).toUpperCase() + e.substring(1);
+        return str.substring(0, 1).toUpperCase() + str.substring(1);
     }
 
-    public static boolean isGetter(String fieldName, Method e) {
+    public static boolean isGetter(String fieldName, Method method) {
         boolean isGetter = false;
         for (String prefix : GETTER_PREFIXES) {
-            isGetter |= e.getName().equals(StringUtils.camelCase(prefix, fieldName));
+            isGetter |= method.getName().equals(StringUtils.camelCase(prefix, fieldName));
         }
         return isGetter;
     }

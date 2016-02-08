@@ -5,3 +5,7 @@ env:
 security:
   basic:
     enabled: false
+spring:
+  jackson:
+    serialization:
+      # See com.fasterxml.jackson.databind.SerializationFeature

@@ -13,17 +13,17 @@ import org.springframework.web.bind.annotation.RestController;
 
 @ControllerAdvice(annotations = RestController.class)
 public class ExceptionController {
-    Logger LOGGER = LoggerFactory.getLogger(ExceptionController.class);
+    private final static Logger LOGGER = LoggerFactory.getLogger(ExceptionController.class);
 
 	@ExceptionHandler(ApiException.class)
-	public ResponseEntity<ExceptionEntity> exceptionHandler(ApiException e) {
-		LOGGER.info(String.format("The following error occured: %s", e.getMessage()));
-		return new ResponseEntity<>(new ExceptionEntity(e), e.status());
+	public ResponseEntity<ExceptionEntity> exceptionHandler(ApiException exception) {
+		LOGGER.info(String.format("The following error occured: %s", exception.getMessage()));
+		return new ResponseEntity<>(new ExceptionEntity(exception), exception.status());
 	}
 
 	@ExceptionHandler(Throwable.class)
-	public ResponseEntity<ExceptionEntity> exceptionHandler(Throwable e) {
-		LOGGER.error(e.getMessage(), e);
-		return new ResponseEntity<>(new ExceptionEntity(e), HttpStatus.BAD_REQUEST);
+	public ResponseEntity<ExceptionEntity> exceptionHandler(Throwable exception) {
+		LOGGER.error(exception.getMessage(), exception);
+		return new ResponseEntity<>(new ExceptionEntity(exception), HttpStatus.BAD_REQUEST);
 	}
 }

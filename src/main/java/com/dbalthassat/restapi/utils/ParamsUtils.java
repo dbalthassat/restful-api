@@ -27,9 +27,13 @@ public class ParamsUtils {
             stream = stream.filter(filter);
         }
         if(params.getQuery().isPresent()) {
-            stream = stream.filter(e -> e.query(params.getQuery().get()));
+            stream = stream.filter(e -> queryFilter(params.getQuery().get(), e));
         }
         return stream.collect(Collectors.toList());
+    }
+
+    private static <T extends Entity, E extends T> boolean queryFilter(String query, E value) {
+        return value.query(query);
     }
 
     private static <T extends Entity> Params<T> parseParams(Map<String, String[]> parameterMap, Class<? extends Entity> clazz) {

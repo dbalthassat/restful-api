@@ -14,46 +14,44 @@ import java.util.concurrent.atomic.AtomicLong;
 @RequestMapping("/greetings")
 // TODO versioning, cf http://www.vinaysahni.com/best-practices-for-a-pragmatic-restful-api
 public class GreetingController {
-    private static final String template = "Hello, %s!";
-
-    private final AtomicLong counter = new AtomicLong();
+    private static final String TEMPLATE = "Hello, %s!";
+    private static final String DEFAULT_NAME = "world";
+    private static final AtomicLong COUNTER = new AtomicLong();
 
     /**
      * Simule une base de données
       */
-    private final Map<Long, Greeting> bdd = new HashMap <>();
+    private static final Map<Long, Greeting> BDD = new HashMap<>();
 
     @PostConstruct
-    public void postConstruct() {
+    public void initBdd() {
         List<Greeting> greetings = new LinkedList<>();
-        greetings.add(new Greeting(counter.incrementAndGet(), "world"));
-        greetings.add(new Greeting(counter.incrementAndGet(), "tata"));
-        greetings.add(new Greeting(counter.incrementAndGet(), "toto"));
-        greetings.add(new Greeting(counter.incrementAndGet(), "titi"));
-        greetings.forEach(e -> bdd.put(e.getId(), e));
+        greetings.add(new Greeting(COUNTER.incrementAndGet(), "world"));
+        greetings.add(new Greeting(COUNTER.incrementAndGet(), "tata"));
+        Greeting greetingWithDescription = new Greeting(COUNTER.incrementAndGet(), "toto");
+        greetingWithDescription.setDescription("A small description");
+        greetings.add(greetingWithDescription);
+        greetings.add(new Greeting(COUNTER.incrementAndGet(), "titi"));
+        greetings.forEach(e -> BDD.put(e.getId(), e));
     }
 
+    @ResponseBody
     @RequestMapping(value = {"", "/"}, method = RequestMethod.GET)
-    @ResponseBody
     public List<Greeting> get(HttpServletRequest request) {
-        return ParamsUtils.apply(request.getParameterMap(), new LinkedList<>(bdd.values()));
+        return ParamsUtils.apply(new HashMap<>(request.getParameterMap()), new LinkedList<>(BDD.values()));
     }
 
-    @RequestMapping(value = "/{id:[0-9]+}", method = RequestMethod.GET)
     @ResponseBody
-    // TODO voir comment gérer lorsque l'entrée ne respecte pas le format voulu
+    @RequestMapping(value = "/{id:[0-9]+}", method = RequestMethod.GET)
     public Greeting get(@PathVariable(value = "id") Long id) {
         return findGreeting(id);
     }
 
-    @RequestMapping(method = RequestMethod.POST, consumes = "application/json")
     @ResponseBody
+    @RequestMapping(method = RequestMethod.POST, consumes = "application/json")
     public Greeting post(@RequestBody(required = false) Greeting greeting) {
-        String name = "world";
-        if(greeting != null) {
-            name = greeting.getName();
-        }
-        return createOrUpdateGreeting(counter.incrementAndGet(), String.format(template, name));
+        String name = findNameOrDefaultName(greeting);
+        return createOrUpdateGreeting(COUNTER.incrementAndGet(), String.format(TEMPLATE, name));
     }
 
     // TODO voir si PATCH est bien implémenté
@@ -61,19 +59,22 @@ public class GreetingController {
     @ResponseBody
     public Greeting put(@PathVariable(value = "id") Long id, @RequestParam(value = "name") String name) {
         findGreeting(id);
-        return createOrUpdateGreeting(id, String.format(template, name));
+        return createOrUpdateGreeting(id, String.format(TEMPLATE, name));
     }
 
     @RequestMapping(value = "/{id:[0-9]+}", method = RequestMethod.DELETE)
     @ResponseBody
     public Greeting delete(@PathVariable(value = "id") Long id) {
-        findGreeting(id);
-        return bdd.remove(id);
+        Greeting result = BDD.remove(id);
+        if(result == null) {
+            throw buildNotFoundException(id);
+        }
+        return result;
     }
 
     private Greeting findGreeting(Long id) {
-        Optional<Greeting> op = Optional.ofNullable(bdd.get(id));
-        return op.orElseThrow(() -> new NotFoundException(String.format("Greeting %d not found.", id)));
+        Optional<Greeting> op = Optional.ofNullable(BDD.get(id));
+        return op.orElseThrow(() -> buildNotFoundException(id));
     }
 
     // TODO à externaliser dans un service
@@ -81,7 +82,19 @@ public class GreetingController {
         Objects.requireNonNull(id, "The id must not be null.");
         Objects.requireNonNull(name, "The name must not be null.");
         Greeting greeting = new Greeting(id, name);
-        bdd.put(greeting.getId(), greeting);
+        BDD.put(greeting.getId(), greeting);
         return greeting;
+    }
+
+    private String findNameOrDefaultName(@RequestBody(required = false) Greeting greeting) {
+        String name = DEFAULT_NAME;
+        if(greeting != null && greeting.getName() != null) {
+            name = greeting.getName();
+        }
+        return name;
+    }
+
+    private NotFoundException buildNotFoundException(Long id) {
+        return new NotFoundException(String.format("Greeting %d not found.", id));
     }
 }

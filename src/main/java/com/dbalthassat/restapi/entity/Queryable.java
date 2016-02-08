@@ -1,7 +1,5 @@
 package com.dbalthassat.restapi.entity;
 
-import com.dbalthassat.restapi.exception.NotQueryableException;
-
 /**
  * This interface should be implemented by objects which are queryable. This means the API will accept
  * the parameter {@code q} to process a research on the object.
@@ -14,12 +12,9 @@ public interface Queryable {
      * value and the result of this method is done by {@link Queryable#query(String)}.
      *
      * @see Queryable#query(String)
-     * @throws NotQueryableException if the method has not been implemented.
      * @return a value which will match, or not match, with the query of the user.
      */
-    default String queryValue() {
-        throw new NotQueryableException("This request does not accept parameter q.");
-    }
+    String queryValue();
 
     /**
      * If the entity is queryable, this method will compare the result of the method {@link Queryable#queryValue()}

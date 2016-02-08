@@ -1,46 +1,46 @@
 package com.dbalthassat.restapi.entity;
 
 import com.dbalthassat.restapi.exception.ApiException;
-import org.springframework.http.HttpStatus;
+import com.dbalthassat.restapi.exception.ExceptionCode;
 
 public class ExceptionEntity {
-    private Integer status;
-    private Integer code;
-    private String message;
+    private final String message;
+    private final int status;
+    private final int code;
 
     public ExceptionEntity(ApiException exception) {
+        this.message = exception.getMessage();
         this.status = exception.status().value();
         this.code = exception.code();
-        this.message = exception.getMessage();
     }
 
     public ExceptionEntity(Throwable exception) {
-        this.status = HttpStatus.BAD_REQUEST.value();
-        this.code = HttpStatus.BAD_REQUEST.value();
-        this.message = exception.getMessage();
+        this(exception.getMessage());
+    }
+
+    public ExceptionEntity(String message) {
+        this(message, ExceptionCode.BAD_REQUEST.code());
+    }
+
+    public ExceptionEntity(String message, int status) {
+        this(message, status, status);
+    }
+
+    public ExceptionEntity(String message, int status, int code) {
+        this.message = message;
+        this.status = status;
+        this.code = code;
     }
 
     public String getMessage() {
         return message;
     }
 
-    public void setMessage(String message) {
-        this.message = message;
-    }
-
-    public Integer getStatus() {
+    public int getStatus() {
         return status;
     }
 
-    public void setStatus(Integer status) {
-        this.status = status;
-    }
-
-    public Integer getCode() {
+    public int getCode() {
         return code;
-    }
-
-    public void setCode(Integer code) {
-        this.code = code;
     }
 }
