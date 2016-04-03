@@ -17,6 +17,7 @@ import java.util.stream.Stream;
 
 public class ParamsUtils {
     private final static Logger LOGGER = LoggerFactory.getLogger(ParamsUtils.class);
+    private final static String[] RESERVED_WORDS = { "sort", "pretiffy", "q" };
 
     private ParamsUtils() {}
 
@@ -37,12 +38,19 @@ public class ParamsUtils {
     }
 
     private static <T extends Entity> Params<T> parseParams(Map<String, String[]> parameterMap, Class<? extends Entity> clazz) {
-        String[] sort = parameterMap.remove("sort");
-        String[] q = parameterMap.remove("q");
+        String[] sort = parameterMap.get("sort");
+        String[] q = parameterMap.get("q");
+        removeReservedWords(parameterMap);
         List<Predicate<T>> filters = handleFilters(parameterMap, clazz);
         Optional<String> query = handleQuery(q);
         handleSort(sort);
         return new Params<>(filters, query);
+    }
+
+    private static void removeReservedWords(Map<String, String[]> parameterMap) {
+        for(String word: RESERVED_WORDS) {
+            parameterMap.remove(word);
+        }
     }
 
     private static Optional<String> handleQuery(String[] q) {
