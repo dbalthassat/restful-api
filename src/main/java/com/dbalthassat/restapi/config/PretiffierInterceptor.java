@@ -13,7 +13,7 @@ public class PretiffierInterceptor extends HandlerInterceptorAdapter {
     private static final Logger LOGGER = LoggerFactory.getLogger(PretiffierInterceptor.class);
 
     @Autowired
-    MappingJackson2HttpMessageConverter mappingJackson2HttpMessageConverter;
+    private MappingJackson2HttpMessageConverter mappingJackson2HttpMessageConverter;
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {

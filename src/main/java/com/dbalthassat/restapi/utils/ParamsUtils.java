@@ -7,10 +7,7 @@ import org.slf4j.LoggerFactory;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -30,6 +27,11 @@ public class ParamsUtils {
         if(params.getQuery().isPresent()) {
             stream = stream.filter(e -> queryFilter(params.getQuery().get(), e));
         }
+        Collections.reverse(params.getSorts());
+        for(Comparator<T> sort: params.getSorts()) {
+            stream = stream.sorted(sort);
+        }
+        params.getSorts().forEach(e -> {});
         return stream.collect(Collectors.toList());
     }
 
@@ -43,8 +45,8 @@ public class ParamsUtils {
         removeReservedWords(parameterMap);
         List<Predicate<T>> filters = handleFilters(parameterMap, clazz);
         Optional<String> query = handleQuery(q);
-        handleSort(sort);
-        return new Params<>(filters, query);
+        List<Comparator<T>> sorts = handleSort(sort, clazz);
+        return new Params<>(filters, sorts, query);
     }
 
     private static void removeReservedWords(Map<String, String[]> parameterMap) {
@@ -62,8 +64,48 @@ public class ParamsUtils {
     }
 
     // TODO gérer les tris
-    private static void handleSort(String[] sorts) {
+    private static <T extends Entity> List<Comparator<T>> handleSort(String[] sortsRequest, Class<? extends Entity> clazz) {
+        if(sortsRequest == null || sortsRequest.length == 0) {
+            return Collections.emptyList();
+        }
+        return Arrays.stream(sortsRequest[0].split(",")).collect(Collectors.toList())
+                .stream()
+                .map(String::trim)
+                .map(ParamsUtils::addDefaultSortDirectionIfNeeded)
+                .map(sort -> ParamsUtils.<T>buildSort(sort, clazz))
+                .collect(Collectors.toList());
+    }
 
+    private static String addDefaultSortDirectionIfNeeded(String sort) {
+        if(!sort.startsWith("+") && !sort.startsWith("-")) {
+            return "+" + sort;
+        }
+        return sort;
+    }
+
+    @SuppressWarnings("unchecked")
+    private static <T extends Entity> Comparator<T> buildSort(String sort, Class<? extends Entity> clazz) {
+        int direction = sort.startsWith("-") ? -1 : 1;
+        sort = sort.substring(1);
+        Method getter = buildGetter(clazz, sort);
+        return (a, b) -> {
+            try {
+                Comparable<Object> comparableA = (Comparable<Object>) getter.invoke(a);
+                Comparable<Object> comparableB = (Comparable<Object>) getter.invoke(b);
+                if(comparableA == null && comparableB == null) {
+                    return 0;
+                } else if(comparableA == null) {
+                    return 1;
+                } else if(comparableB == null) {
+                    return -1;
+                }
+                return comparableA.compareTo(comparableB) * direction;
+            } catch (IllegalAccessException | InvocationTargetException e) {
+                // Should not happen.
+                LOGGER.error(e.getMessage(), e);
+            }
+            return 0;
+        };
     }
 
     // TODO gérer les objets imbriqués
@@ -94,7 +136,6 @@ public class ParamsUtils {
                 // Should not happen.
                 LOGGER.error(e.getMessage(), e);
             }
-            // If this error occurs, we do not apply this filter.
             return true;
         });
     }
@@ -114,7 +155,7 @@ public class ParamsUtils {
         return Arrays.stream(clazz.getDeclaredMethods())
                     .filter(isGetter(fieldName))
                     .findFirst()
-                    .orElseThrow(() -> new IllegalParameterException("The filter %s cannot be apply.", fieldName));
+                    .orElseThrow(() -> new IllegalParameterException("The field %s does not exist.", fieldName));
     }
 
     private static Predicate<Method> isGetter(String fieldName) {

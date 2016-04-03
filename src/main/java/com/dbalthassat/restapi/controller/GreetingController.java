@@ -31,6 +31,9 @@ public class GreetingController {
         Greeting greetingWithDescription = new Greeting(COUNTER.incrementAndGet(), "toto");
         greetingWithDescription.setDescription("A small description");
         greetings.add(greetingWithDescription);
+        Greeting greetingWithDescription2 = new Greeting(COUNTER.incrementAndGet(), "a");
+        greetingWithDescription2.setDescription("B");
+        greetings.add(greetingWithDescription2);
         greetings.add(new Greeting(COUNTER.incrementAndGet(), "titi"));
         greetings.forEach(e -> BDD.put(e.getId(), e));
     }
