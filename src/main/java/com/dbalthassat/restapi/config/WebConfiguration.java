@@ -1,16 +1,18 @@
 package com.dbalthassat.restapi.config;
 
-import com.fasterxml.jackson.annotation.JsonInclude.Include;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 
 @Configuration
 public class WebConfiguration {
     @Bean
-    public ObjectMapper objectMapper() {
-        ObjectMapper mapper = new ObjectMapper();
-        mapper.setSerializationInclusion(Include.NON_NULL);
-        return mapper;
+    public MappingJackson2HttpMessageConverter mappingJackson2HttpMessageConverter() {
+        return new DefaultMappingJackson2HttpMessageConverter();
+    }
+
+    @Bean
+    public MappingJackson2HttpMessageConverter prettyMappingJackson2HttpMessageConverter() {
+        return new PrettyMappingJackson2HttpMessageConverter();
     }
 }

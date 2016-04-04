@@ -14,7 +14,7 @@ import java.util.stream.Stream;
 
 public class ParamsUtils {
     private final static Logger LOGGER = LoggerFactory.getLogger(ParamsUtils.class);
-    private final static String[] RESERVED_WORDS = { "sort", "pretiffy", "q" };
+    private final static String[] RESERVED_WORDS = { "sort", "q" };
 
     private ParamsUtils() {}
 
@@ -63,7 +63,6 @@ public class ParamsUtils {
         }
     }
 
-    // TODO gérer les tris
     private static <T extends Entity> List<Comparator<T>> handleSort(String[] sortsRequest, Class<? extends Entity> clazz) {
         if(sortsRequest == null || sortsRequest.length == 0) {
             return Collections.emptyList();
