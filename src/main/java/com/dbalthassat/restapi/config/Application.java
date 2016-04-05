@@ -9,8 +9,12 @@ import org.springframework.context.annotation.ComponentScan;
 
 @EnableConfigurationProperties
 @SpringBootApplication
-@ComponentScan({"com.dbalthassat.restapi.config", "com.dbalthassat.restapi.controller"})
+@ComponentScan({Application.BASE_PACKAGE + ".config",
+        Application.BASE_PACKAGE + ".controller",
+        Application.BASE_PACKAGE + ".property"
+})
 public class Application extends SpringBootServletInitializer {
+    public static final String BASE_PACKAGE = "com.dbalthassat.restapi";
     /**
      * Start the web app on a Spring Boot's embedded Tomcat.
      *

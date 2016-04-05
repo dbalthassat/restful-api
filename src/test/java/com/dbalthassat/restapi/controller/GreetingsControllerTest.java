@@ -24,8 +24,8 @@ import static org.springframework.test.web.servlet.setup.MockMvcBuilders.webAppC
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(classes = Application.class)
 @WebAppConfiguration
-public class GreetingControllerTest {
-    private static final Logger LOGGER = getLogger(GreetingControllerTest.class);
+public class GreetingsControllerTest {
+    private static final Logger LOGGER = getLogger(GreetingsControllerTest.class);
 
     private MockMvc mockMvc;
 

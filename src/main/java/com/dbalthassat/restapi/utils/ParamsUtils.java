@@ -1,6 +1,6 @@
 package com.dbalthassat.restapi.utils;
 
-import com.dbalthassat.restapi.entity.Entity;
+import com.dbalthassat.restapi.entity.ApiEntity;
 import com.dbalthassat.restapi.exception.IllegalParameterException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -14,11 +14,11 @@ import java.util.stream.Stream;
 
 public class ParamsUtils {
     private final static Logger LOGGER = LoggerFactory.getLogger(ParamsUtils.class);
-    private final static String[] RESERVED_WORDS = { "sort", "q" };
+    private final static String[] RESERVED_WORDS = { "sort", "fields", "q" };
 
     private ParamsUtils() {}
 
-    public static <T extends Entity, E extends T> List<T> apply(Map<String, String[]> parameterMap, List<E> values) {
+    public static <T extends ApiEntity, E extends T> List<T> apply(Map<String, String[]> parameterMap, List<E> values) {
         Params<T> params  = parseParams(parameterMap, values.get(0).getClass());
         Stream<E> stream = values.stream();
         for (Predicate<T> filter : params.getFilters()) {
@@ -35,11 +35,11 @@ public class ParamsUtils {
         return stream.collect(Collectors.toList());
     }
 
-    private static <T extends Entity, E extends T> boolean queryFilter(String query, E value) {
+    private static <T extends ApiEntity, E extends T> boolean queryFilter(String query, E value) {
         return value.query(query);
     }
 
-    private static <T extends Entity> Params<T> parseParams(Map<String, String[]> parameterMap, Class<? extends Entity> clazz) {
+    private static <T extends ApiEntity> Params<T> parseParams(Map<String, String[]> parameterMap, Class<? extends ApiEntity> clazz) {
         String[] sort = parameterMap.get("sort");
         String[] q = parameterMap.get("q");
         removeReservedWords(parameterMap);
@@ -63,7 +63,7 @@ public class ParamsUtils {
         }
     }
 
-    private static <T extends Entity> List<Comparator<T>> handleSort(String[] sortsRequest, Class<? extends Entity> clazz) {
+    private static <T extends ApiEntity> List<Comparator<T>> handleSort(String[] sortsRequest, Class<? extends ApiEntity> clazz) {
         if(sortsRequest == null || sortsRequest.length == 0) {
             return Collections.emptyList();
         }
@@ -83,7 +83,7 @@ public class ParamsUtils {
     }
 
     @SuppressWarnings("unchecked")
-    private static <T extends Entity> Comparator<T> buildSort(String sort, Class<? extends Entity> clazz) {
+    private static <T extends ApiEntity> Comparator<T> buildSort(String sort, Class<? extends ApiEntity> clazz) {
         int direction = sort.startsWith("-") ? -1 : 1;
         sort = sort.substring(1);
         Method getter = buildGetter(clazz, sort);
@@ -108,29 +108,27 @@ public class ParamsUtils {
     }
 
     // TODO gérer les objets imbriqués
-    private static <T extends Entity> List<Predicate<T>> handleFilters(Map<String, String[]> parameterMap, Class<? extends Entity> clazz) {
+    private static <T extends ApiEntity> List<Predicate<T>> handleFilters(Map<String, String[]> parameterMap, Class<? extends ApiEntity> clazz) {
         return parameterMap.entrySet().stream()
                 .map(parameterEntry -> ParamsUtils.<T>buildFilter(clazz, parameterEntry)).collect(Collectors.toList());
     }
 
-    private static <T extends Entity> Predicate<T> buildFilter(Class<? extends Entity> clazz, Map.Entry<String, String[]> parameterEntry) {
+    private static <T extends ApiEntity> Predicate<T> buildFilter(Class<? extends ApiEntity> clazz, Map.Entry<String, String[]> parameterEntry) {
         String fieldName = parameterEntry.getKey();
         String[] params = parameterEntry.getValue();
-        Method getter = buildGetter(clazz, fieldName);
         Predicate<T> condition = t -> false;
         for(String param: params) {
-            condition = buildCondition(getter, condition, param);
+            condition = buildCondition(fieldName, clazz, condition, param);
         }
         return condition;
     }
 
-    private static <T extends Entity> Predicate<T> buildCondition(Method getter, Predicate<T> condition, String param) {
+    private static <T extends ApiEntity> Predicate<T> buildCondition(String fieldName, Class<? extends ApiEntity> clazz,
+                                                                     Predicate<T> condition, String param) {
         return condition.or(t -> {
             try {
-                Optional<Boolean> value = findConditionDependingOnType(getter, param, t);
-                if(value.isPresent()) {
-                    return value.get();
-                }
+                Optional<Boolean> value = findConditionDependingOnType(fieldName, clazz, param, t);
+                return value.orElse(false);
             } catch (IllegalAccessException | InvocationTargetException e) {
                 // Should not happen.
                 LOGGER.error(e.getMessage(), e);
@@ -139,22 +137,31 @@ public class ParamsUtils {
         });
     }
 
-    private static <T extends Entity> Optional<Boolean> findConditionDependingOnType(Method getter, String param, T t) throws IllegalAccessException, InvocationTargetException {
+    private static <T extends ApiEntity> Optional<Boolean> findConditionDependingOnType(String fieldName, Class<? extends ApiEntity> clazz,
+                                                                                        String param, T t) throws IllegalAccessException, InvocationTargetException {
+        Method getter = buildGetter(clazz, fieldName);
         Object value = getter.invoke(t);
         Optional<Boolean> result = Optional.empty();
         if(value instanceof String) {
             result = Optional.of(param.equals(value));
         } else if(value instanceof Enum<?>) {
             result = Optional.of(param.equals(((Enum<?>) value).name()));
+        } else if(value instanceof Long) {
+            try {
+                result = Optional.of(Long.parseLong(param) == (Long) value);
+            } catch(NumberFormatException e) {
+                throw new IllegalParameterException("The value of field '%s' should be a number.", fieldName);
+            }
+
         }
         return result;
     }
 
-    private static Method buildGetter(Class<? extends Entity> clazz, String fieldName) {
+    private static Method buildGetter(Class<? extends ApiEntity> clazz, String fieldName) {
         return Arrays.stream(clazz.getDeclaredMethods())
                     .filter(isGetter(fieldName))
                     .findFirst()
-                    .orElseThrow(() -> new IllegalParameterException("The field %s does not exist.", fieldName));
+                    .orElseThrow(() -> new IllegalParameterException("The field '%s' does not exist.", fieldName));
     }
 
     private static Predicate<Method> isGetter(String fieldName) {

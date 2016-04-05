@@ -1,9 +1,15 @@
 package com.dbalthassat.restapi.entity;
 
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
 import javax.validation.constraints.NotNull;
 
-public class Greeting implements Entity {
-    @NotNull
+@Entity
+public class Greetings implements ApiEntity {
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private long id;
 
     @NotNull
@@ -12,12 +18,16 @@ public class Greeting implements Entity {
     private String description;
 
     @SuppressWarnings("unused")
-    public Greeting() {
+    public Greetings() {
     }
 
-    public Greeting(long id, String name) {
-        this.id = id;
+    public Greetings(String name) {
+        this(name, null);
+    }
+
+    public Greetings(String name, String description) {
         this.name = name;
+        this.description = description;
     }
 
     public long getId() {

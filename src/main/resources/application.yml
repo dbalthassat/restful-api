@@ -8,4 +8,13 @@ security:
 spring:
   jackson:
     serialization:
-      # See com.fasterxml.jackson.databind.SerializationFeature
+    # See com.fasterxml.jackson.databind.SerializationFeature
+  jpa:
+    show-sql: true
+    hibernate:
+      ddl-auto: create
+datasource:
+  url: jdbc:postgresql://localhost:5432/restful-api
+  username: postgres
+  password: admin
+  dataSourceClassName: org.postgresql.ds.PGSimpleDataSource

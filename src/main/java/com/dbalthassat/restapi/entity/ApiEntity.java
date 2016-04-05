@@ -2,7 +2,7 @@ package com.dbalthassat.restapi.entity;
 
 import com.dbalthassat.restapi.exception.NotQueryableException;
 
-public interface Entity extends Queryable {
+public interface ApiEntity extends Queryable {
     /**
      * {@inheritDoc}
      *
