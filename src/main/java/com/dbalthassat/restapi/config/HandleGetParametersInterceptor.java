@@ -1,6 +1,7 @@
 package com.dbalthassat.restapi.config;
 
 import com.dbalthassat.restapi.exception.IllegalParameterException;
+import com.dbalthassat.restapi.utils.ArrayUtils;
 import com.mysema.query.types.expr.BooleanExpression;
 import com.mysema.query.types.path.NumberPath;
 import com.mysema.query.types.path.StringPath;
@@ -17,13 +18,13 @@ import java.util.stream.Collectors;
 // TODO gérer paramètre q
 @Component
 public class HandleGetParametersInterceptor extends HandlerInterceptorAdapter {
+    private final static String[] RESERVED_PARAMS = { "pageNumber", "pageSize", "sort", "fields" };
     private final static String BASE_PACKAGE = Application.BASE_PACKAGE + ".entity";
 
     @Override
     // TODO créer une annotation et exécuter ce code uniquement si le handler a cette annotation
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
         Map<String, String[]> params = new HashMap<>(request.getParameterMap());
-        Optional<String> q = removeParam(params, "q");
         Optional<String> pageNumber = removeParam(params, "pageNumber");
         Optional<String> pageSize = removeParam(params, "pageSize");
         Optional<String> sort = removeParam(params, "sort");
@@ -64,17 +65,16 @@ public class HandleGetParametersInterceptor extends HandlerInterceptorAdapter {
     }
 
     private BooleanExpression createFilter(Map<String, String[]> params, String className, Object resource) {
-        BooleanExpression predicate = null;
+        List<BooleanExpression> predicates = new LinkedList<>();
         for(Map.Entry<String, String[]> param: params.entrySet()) {
             String fieldName = param.getKey();
-            Object field = findField(className, resource, fieldName);
-            String fieldValue = param.getValue()[0];
-            BooleanExpression condition = createCondition(field, fieldValue);
-            if(condition != null) {
-                predicate = appendCondition(predicate, condition);
+            if(!ArrayUtils.contains(RESERVED_PARAMS, fieldName)) {
+                Object field = findField(className, resource, fieldName);
+                String fieldValue = param.getValue()[0];
+                predicates.add(createCondition(field, fieldValue));
             }
         }
-        return predicate;
+        return BooleanExpression.allOf(predicates.toArray(new BooleanExpression[predicates.size()]));
     }
 
     private Object findField(String className, Object resource, String fieldName) {
@@ -85,14 +85,6 @@ public class HandleGetParametersInterceptor extends HandlerInterceptorAdapter {
             throw new IllegalParameterException("The field '%s' does not exist.", fieldName);
         }
         return field;
-    }
-
-    private BooleanExpression appendCondition(BooleanExpression predicate, BooleanExpression condition) {
-        if(predicate == null) {
-            return condition;
-        }
-        predicate.and(condition);
-        return predicate;
     }
 
     @SuppressWarnings("unchecked")

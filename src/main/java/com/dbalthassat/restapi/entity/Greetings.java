@@ -10,7 +10,7 @@ import javax.validation.constraints.NotNull;
 public class Greetings implements ApiEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private long id;
+    private Long id;
 
     @NotNull
     private String name;
@@ -30,11 +30,11 @@ public class Greetings implements ApiEntity {
         this.description = description;
     }
 
-    public long getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(long id) {
+    public void setId(Long id) {
         this.id = id;
     }
 

@@ -20,4 +20,13 @@ public class ArrayUtils {
         }
         return result;
     }
+
+    public static <T> boolean contains(T[] array, T element) {
+        for(T current: array) {
+            if(current.equals(element)) {
+                return true;
+            }
+        }
+        return false;
+    }
 }
