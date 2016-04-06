@@ -10,7 +10,7 @@ public class NotQueryableException extends BadRequestException {
     }
 
     @Override
-    public int code() {
-        return ExceptionCode.NOT_QUERYABLE.code();
+    public ExceptionCode code() {
+        return ExceptionCode.NOT_QUERYABLE;
     }
 }

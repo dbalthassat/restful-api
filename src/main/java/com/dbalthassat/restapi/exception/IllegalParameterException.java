@@ -6,7 +6,7 @@ public class IllegalParameterException extends BadRequestException {
     }
 
     @Override
-    public int code() {
-        return ExceptionCode.ILLEGAL_PARAMETER.code();
+    public ExceptionCode code() {
+        return ExceptionCode.ILLEGAL_PARAMETER;
     }
 }

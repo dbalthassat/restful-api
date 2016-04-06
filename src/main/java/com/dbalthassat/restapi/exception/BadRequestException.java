@@ -15,8 +15,8 @@ public class BadRequestException extends ApiException {
         this("Bad request");
     }
 
-    public int code() {
-        return ExceptionCode.BAD_REQUEST.code();
+    public ExceptionCode code() {
+        return ExceptionCode.BAD_REQUEST;
     }
 
     @Override

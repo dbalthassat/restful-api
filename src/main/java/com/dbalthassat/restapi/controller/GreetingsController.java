@@ -1,9 +1,8 @@
 package com.dbalthassat.restapi.controller;
 
 import com.dbalthassat.restapi.entity.Greetings;
-import com.dbalthassat.restapi.exception.NotFoundException;
+import com.dbalthassat.restapi.exception.clientError.NotFoundException;
 import com.dbalthassat.restapi.repository.GreetingRepository;
-import com.mysema.query.types.Predicate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -27,7 +26,6 @@ public class GreetingsController {
     @PostConstruct
     public void initBdd() {
         List<Greetings> greetings = new LinkedList<>();
-
         greetings.add(new Greetings("world"));
         greetings.add(new Greetings("tata"));
         greetings.add(new Greetings("toto", "A small description"));
@@ -39,8 +37,7 @@ public class GreetingsController {
     @ResponseBody
     @RequestMapping(value = {"", "/"}, method = RequestMethod.GET)
     public Iterable<Greetings> get(HttpServletRequest request) throws Exception {
-        Predicate predicate = (Predicate) request.getAttribute("predicate");
-        return repository.findAll(predicate);
+        return repository.findAll(request);
     }
 
     @ResponseBody

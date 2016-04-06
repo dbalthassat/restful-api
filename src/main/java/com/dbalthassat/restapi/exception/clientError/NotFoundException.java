@@ -1,5 +1,7 @@
-package com.dbalthassat.restapi.exception;
+package com.dbalthassat.restapi.exception.clientError;
 
+import com.dbalthassat.restapi.exception.ApiException;
+import com.dbalthassat.restapi.exception.ExceptionCode;
 import org.springframework.http.HttpStatus;
 
 public class NotFoundException extends ApiException {
@@ -7,17 +9,9 @@ public class NotFoundException extends ApiException {
         super(String.format(message, params));
     }
 
-    public NotFoundException(String message, Throwable cause) {
-        super(message, cause);
-    }
-
-    public NotFoundException() {
-        this("Item not found");
-    }
-
     @Override
-    public int code() {
-        return ExceptionCode.NOT_FOUND.code();
+    public ExceptionCode code() {
+        return ExceptionCode.NOT_FOUND;
     }
 
     @Override

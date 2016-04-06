@@ -11,7 +11,7 @@ public class ExceptionEntity {
     public ExceptionEntity(ApiException exception) {
         this.message = exception.getMessage();
         this.status = exception.status().value();
-        this.code = exception.code();
+        this.code = exception.code().code();
     }
 
     public ExceptionEntity(Throwable exception) {

@@ -18,7 +18,7 @@ public abstract class ApiException extends RuntimeException {
 		super(cause);
 	}
 
-	public abstract int code();
+	public abstract ExceptionCode code();
 
 	public abstract HttpStatus status();
 }

@@ -24,6 +24,6 @@ public class ExceptionController {
 	@ExceptionHandler(Throwable.class)
 	public ResponseEntity<ExceptionEntity> exceptionHandler(Throwable exception) {
 		LOGGER.error(exception.getMessage(), exception);
-		return new ResponseEntity<>(new ExceptionEntity(exception), HttpStatus.BAD_REQUEST);
+		return new ResponseEntity<>(new ExceptionEntity(exception.toString()), HttpStatus.BAD_REQUEST);
 	}
 }

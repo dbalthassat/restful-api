@@ -10,7 +10,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter
 @Configuration
 public class WebConfiguration extends WebMvcConfigurerAdapter {
     @Autowired
-    private FilterWithGetParameterInterceptor filterWithGetParameterInterceptor;
+    private HandleGetParametersInterceptor handleGetParametersInterceptor;
 
     @Bean
     public MappingJackson2HttpMessageConverter mappingJackson2HttpMessageConverter() {
@@ -24,6 +24,6 @@ public class WebConfiguration extends WebMvcConfigurerAdapter {
 
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
-        registry.addInterceptor(filterWithGetParameterInterceptor);
+        registry.addInterceptor(handleGetParametersInterceptor);
     }
 }
