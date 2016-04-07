@@ -16,6 +16,7 @@ import java.util.Optional;
 @RestController
 @RequestMapping("/greetings")
 // TODO versioning, cf http://www.vinaysahni.com/best-practices-for-a-pragmatic-restful-api
+// TODO add an alias
 public class GreetingsController {
     private static final String TEMPLATE = "Hello, %s!";
     private static final String DEFAULT_NAME = "world";

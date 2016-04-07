@@ -1,17 +1,12 @@
 package com.dbalthassat.restapi.entity;
 
 import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import javax.persistence.SequenceGenerator;
 import javax.validation.constraints.NotNull;
 
 @Entity
-public class Greetings implements ApiEntity {
-    @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    private Long id;
-
+@SequenceGenerator(name = "SG", sequenceName = "SEQ_GREETINGS", allocationSize = 1)
+public class Greetings extends  ApiEntity {
     @NotNull
     private String name;
 
@@ -30,14 +25,6 @@ public class Greetings implements ApiEntity {
         this.description = description;
     }
 
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
     public String getName() {
         return name;
     }
@@ -52,10 +39,5 @@ public class Greetings implements ApiEntity {
 
     public void setDescription(String description) {
         this.description = description;
-    }
-
-    @Override
-    public String queryValue() {
-        return name + '#' + description;
     }
 }

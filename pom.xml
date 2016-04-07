@@ -71,6 +71,16 @@
             <version>9.4-1201-jdbc41</version>
             <scope>runtime</scope>
         </dependency>
+        <dependency>
+            <groupId>org.jadira.usertype</groupId>
+            <artifactId>usertype.core</artifactId>
+            <version>3.2.0.GA</version>
+        </dependency>
+        <dependency>
+            <groupId>org.jadira.usertype</groupId>
+            <artifactId>usertype.extended</artifactId>
+            <version>3.2.0.GA</version>
+        </dependency>
 
         <!-- Test -->
         <dependency>
