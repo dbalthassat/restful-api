@@ -6,7 +6,10 @@ public enum ExceptionCode {
 	NOT_QUERYABLE(40002),
 
 	NOT_FOUND(404),
-	RESOURCE_NOT_FOUND(40401);
+	RESOURCE_NOT_FOUND(40401),
+
+	UNPROCESSABLE_ENTITY(422),
+	VALIDATION(42201);
 
 	private final int code;
 

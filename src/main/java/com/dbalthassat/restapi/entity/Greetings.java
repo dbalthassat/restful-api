@@ -7,7 +7,7 @@ import javax.validation.constraints.NotNull;
 @Entity
 @SequenceGenerator(name = "SG", sequenceName = "SEQ_GREETINGS", allocationSize = 1)
 public class Greetings extends  ApiEntity {
-    @NotNull
+    @NotNull(message = "Ce champ ne peut pas être vide")
     private String name;
 
     private String description;

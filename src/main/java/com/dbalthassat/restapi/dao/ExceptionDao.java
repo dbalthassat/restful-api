@@ -1,32 +1,32 @@
-package com.dbalthassat.restapi.entity;
+package com.dbalthassat.restapi.dao;
 
 import com.dbalthassat.restapi.exception.ApiException;
 import com.dbalthassat.restapi.exception.ExceptionCode;
 
-public class ExceptionEntity {
+public class ExceptionDao {
     private final String message;
     private final int status;
     private final int code;
 
-    public ExceptionEntity(ApiException exception) {
+    public ExceptionDao(ApiException exception) {
         this.message = exception.getMessage();
         this.status = exception.status().value();
         this.code = exception.code().code();
     }
 
-    public ExceptionEntity(Throwable exception) {
+    public ExceptionDao(Throwable exception) {
         this(exception.getMessage());
     }
 
-    public ExceptionEntity(String message) {
+    public ExceptionDao(String message) {
         this(message, ExceptionCode.BAD_REQUEST.code());
     }
 
-    public ExceptionEntity(String message, int status) {
+    public ExceptionDao(String message, int status) {
         this(message, status, status);
     }
 
-    public ExceptionEntity(String message, int status, int code) {
+    public ExceptionDao(String message, int status, int code) {
         this.message = message;
         this.status = status;
         this.code = code;

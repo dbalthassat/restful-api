@@ -51,11 +51,9 @@ public class GreetingsControllerTest {
     public void testPretty() throws Exception {
         Thread[] notPretty = new Thread[10];
         Thread[] pretty = new Thread[10];
-        String resultNotPretty = "[{\"id\":1,\"name\":\"world\"}," +
-                "{\"id\":2,\"name\":\"tata\"}," +
-                "{\"id\":3,\"name\":\"toto\",\"description\":\"A small description\"}," +
-                "{\"id\":4,\"name\":\"a\",\"description\":\"B\"}," +
-                "{\"id\":5,\"name\":\"titi\"}]";
+        String resultNotPretty = "{\"content\":[{\"id\":1},{\"id\":2},{\"id\":3},{\"id\":4},{\"id\":5}]," +
+                "\"last\":true,\"totalElements\":5,\"totalPages\":1,\"size\":10,\"number\":0," +
+                "\"first\":true,\"numberOfElements\":5}";
         AtomicInteger errors = new AtomicInteger();
         AtomicInteger requests = new AtomicInteger();
         for(int i = 0; i < 10; ++i) {
@@ -64,7 +62,7 @@ public class GreetingsControllerTest {
                     requests.incrementAndGet();
                     try {
                         MvcResult result = mockMvc.perform(
-                                get("/greetings")
+                                get("/greetings?fields=id")
                         ).andReturn();
                         if(!resultNotPretty.equals(result.getResponse().getContentAsString())) {
                             errors.incrementAndGet();
@@ -79,7 +77,7 @@ public class GreetingsControllerTest {
                     requests.incrementAndGet();
                     try {
                         MvcResult result = mockMvc.perform(
-                                get("/greetings")
+                                get("/greetings?fields=id")
                                 .accept(MediaType.APPLICATION_JSON + "+pretty")
                         ).andReturn();
                         if(resultNotPretty.equals(result.getResponse().getContentAsString())) {
@@ -97,6 +95,6 @@ public class GreetingsControllerTest {
             notPretty[i].join();
             pretty[i].join();
         }
-        assertEquals("The result is not acceptable. " + errors.get() + " errors for " + requests.get() + " requests.", errors.get(), 0);
+        assertEquals("The result is not acceptable. " + errors.get() + " errors for " + requests.get() + " requests.", 0, errors.get());
     }
 }

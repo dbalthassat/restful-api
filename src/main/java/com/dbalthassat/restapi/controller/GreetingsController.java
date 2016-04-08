@@ -3,11 +3,14 @@ package com.dbalthassat.restapi.controller;
 import com.dbalthassat.restapi.entity.Greetings;
 import com.dbalthassat.restapi.exception.clientError.NotFoundException;
 import com.dbalthassat.restapi.repository.GreetingRepository;
+import com.dbalthassat.restapi.utils.HttpUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpServletRequest;
+import javax.validation.Valid;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
@@ -17,9 +20,9 @@ import java.util.Optional;
 @RequestMapping("/greetings")
 // TODO versioning, cf http://www.vinaysahni.com/best-practices-for-a-pragmatic-restful-api
 // TODO add an alias
+// TODO rate limiting
 public class GreetingsController {
     private static final String TEMPLATE = "Hello, %s!";
-    private static final String DEFAULT_NAME = "world";
 
     @Autowired
     private GreetingRepository repository;
@@ -49,9 +52,9 @@ public class GreetingsController {
 
     @ResponseBody
     @RequestMapping(method = RequestMethod.POST, consumes = "application/json")
-    public Greetings post(@RequestBody(required = false) Greetings greetings) {
-        String name = findNameOrDefaultName(greetings);
-        return createGreeting(String.format(TEMPLATE, name));
+    public ResponseEntity<Greetings> post(HttpServletRequest request, @Valid @RequestBody(required = false) Greetings greetings) {
+        greetings = createGreeting(String.format(TEMPLATE, greetings.getName()));
+        return HttpUtils.buildPostResponse(request, greetings);
     }
 
     // TODO voir si PATCH est bien implémenté
@@ -82,16 +85,7 @@ public class GreetingsController {
     private Greetings createGreeting(String name) {
         Objects.requireNonNull(name, "The name must not be null.");
         Greetings greetings = new Greetings(name);
-        repository.save(greetings);
-        return greetings;
-    }
-
-    private String findNameOrDefaultName(@RequestBody(required = false) Greetings greetings) {
-        String name = DEFAULT_NAME;
-        if(greetings != null && greetings.getName() != null) {
-            name = greetings.getName();
-        }
-        return name;
+        return repository.save(greetings);
     }
 
     private NotFoundException buildNotFoundException(Long id) {
