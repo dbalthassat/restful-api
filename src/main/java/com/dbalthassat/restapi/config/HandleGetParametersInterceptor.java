@@ -1,6 +1,6 @@
 package com.dbalthassat.restapi.config;
 
-import com.dbalthassat.restapi.exception.IllegalParameterException;
+import com.dbalthassat.restapi.exception.clientError.IllegalParameterException;
 import com.dbalthassat.restapi.utils.ArrayUtils;
 import com.mysema.query.types.expr.BooleanExpression;
 import com.mysema.query.types.path.NumberPath;

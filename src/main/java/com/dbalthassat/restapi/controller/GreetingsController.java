@@ -1,19 +1,15 @@
 package com.dbalthassat.restapi.controller;
 
 import com.dbalthassat.restapi.entity.Greetings;
-import com.dbalthassat.restapi.exception.ExceptionMessage;
-import com.dbalthassat.restapi.exception.clientError.NotFoundException;
+import com.dbalthassat.restapi.exception.clientError.IllegalParameterException;
 import com.dbalthassat.restapi.service.GreetingsService;
 import com.dbalthassat.restapi.utils.HttpUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
-import java.util.LinkedList;
-import java.util.List;
 
 @RestController
 @RequestMapping("/greetings")
@@ -30,17 +26,6 @@ public class GreetingsController {
         this.service = service;
     }
 
-    @PostConstruct
-    public void initBdd() {
-        List<Greetings> greetings = new LinkedList<>();
-        greetings.add(new Greetings("world"));
-        greetings.add(new Greetings("tata"));
-        greetings.add(new Greetings("toto", "A small description"));
-        greetings.add(new Greetings("a", "B"));
-        greetings.add(new Greetings("titi"));
-        service.save(greetings);
-    }
-
     @ResponseBody
     @RequestMapping(value = {"", "/"}, method = RequestMethod.GET)
     public Iterable<Greetings> get(HttpServletRequest request) throws Exception {
@@ -48,9 +33,22 @@ public class GreetingsController {
     }
 
     @ResponseBody
+    @RequestMapping(value = {"/recentlyCreated"}, method = RequestMethod.GET)
+    public Iterable<Greetings> getRecentlyCreated(HttpServletRequest request) throws Exception {
+        return service.findAll(request);
+    }
+
+    @ResponseBody
     @RequestMapping(value = "/{id:[0-9]+}", method = RequestMethod.GET)
     public Greetings get(@PathVariable(value = "id") Long id) {
         return service.findOne(id);
+    }
+
+    @SuppressWarnings("MVCPathVariableInspection")
+    @ResponseBody
+    @RequestMapping(value = "/{id:^(?![0-9]+).*}", method = RequestMethod.GET)
+    public Greetings getBadRequest() {
+        throw new IllegalParameterException("A greeting id must be numeric.");
     }
 
     @ResponseBody
@@ -71,11 +69,6 @@ public class GreetingsController {
     @RequestMapping(value = "/{id:[0-9]+}", method = RequestMethod.DELETE)
     @ResponseBody
     public Greetings delete(@PathVariable(value = "id") Long id) {
-        Greetings result = service.findOne(id);
-        service.delete(result);
-        if(result == null) {
-            throw new NotFoundException(ExceptionMessage.GREETINGS_NOT_FOUND.getMessage(), id);
-        }
-        return result;
+        return service.delete(id);
     }
 }

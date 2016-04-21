@@ -1,4 +1,6 @@
-package com.dbalthassat.restapi.exception;
+package com.dbalthassat.restapi.exception.clientError;
+
+import com.dbalthassat.restapi.exception.ExceptionCode;
 
 public class IllegalParameterException extends BadRequestException {
     public IllegalParameterException(String message, Object... params) {

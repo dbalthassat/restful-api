@@ -1,5 +1,7 @@
-package com.dbalthassat.restapi.exception;
+package com.dbalthassat.restapi.exception.clientError;
 
+import com.dbalthassat.restapi.exception.ApiException;
+import com.dbalthassat.restapi.exception.ExceptionCode;
 import org.springframework.http.HttpStatus;
 
 public class BadRequestException extends ApiException {

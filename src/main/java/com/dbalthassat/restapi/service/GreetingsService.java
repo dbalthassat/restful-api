@@ -1,7 +1,6 @@
 package com.dbalthassat.restapi.service;
 
 import com.dbalthassat.restapi.entity.Greetings;
-import com.dbalthassat.restapi.exception.ExceptionMessage;
 import com.dbalthassat.restapi.exception.clientError.NotFoundException;
 import com.dbalthassat.restapi.repository.GreetingsRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,7 +22,7 @@ public class GreetingsService {
 
     public Greetings findOne(Long id) {
         Optional<Greetings> op = Optional.ofNullable(repository.findOne(id));
-        return op.orElseThrow(() -> new NotFoundException(ExceptionMessage.GREETINGS_NOT_FOUND.getMessage(), id));
+        return op.orElseThrow(() -> buildGreetingsNotFoundException(id));
     }
 
     public Greetings createGreeting(String name) {
@@ -40,7 +39,16 @@ public class GreetingsService {
         return repository.save(greetings);
     }
 
-    public void delete(Greetings greeting) {
-        repository.delete(greeting);
+    public Greetings delete(Long id) {
+        Greetings result = repository.findOne(id);
+        repository.delete(result);
+        if(result == null) {
+            throw buildGreetingsNotFoundException(id);
+        }
+        return result;
+    }
+
+    private static NotFoundException buildGreetingsNotFoundException(Long id) {
+        return new NotFoundException("Greeting %d not found.", id);
     }
 }

@@ -1,6 +1,9 @@
 package com.dbalthassat.restapi.controller;
 
 import com.dbalthassat.restapi.config.Application;
+import com.dbalthassat.restapi.entity.Greetings;
+import com.dbalthassat.restapi.entity.Pageable;
+import com.dbalthassat.restapi.utils.JacksonUtils;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -8,6 +11,7 @@ import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.http.MediaType;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
@@ -19,11 +23,14 @@ import java.util.concurrent.atomic.AtomicInteger;
 import static org.junit.Assert.assertEquals;
 import static org.slf4j.LoggerFactory.getLogger;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.test.web.servlet.setup.MockMvcBuilders.webAppContextSetup;
 
+@SuppressWarnings("unchecked")
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(classes = Application.class)
 @WebAppConfiguration
+@ActiveProfiles("test")
 public class GreetingsControllerTest {
     private static final Logger LOGGER = getLogger(GreetingsControllerTest.class);
 
@@ -41,6 +48,22 @@ public class GreetingsControllerTest {
         this.mockMvc = webAppContextSetup(webApplicationContext).build();
     }
 
+    @Test
+    public void testNoResultGetAll() throws Exception {
+        Pageable<Greetings> response = JacksonUtils.getResponse(mockMvc.perform(get("/greetings?fields=id")).andReturn(), Pageable.class);
+        assertEquals(0, response.getTotalElements());
+    }
+
+    @Test
+    public void testNoResultGetOne() throws Exception {
+        mockMvc.perform(get("/greetings/1")).andExpect(status().isNotFound());
+    }
+
+    @Test
+    public void testNoResultGetWithBadId() throws Exception {
+        mockMvc.perform(get("/greetings/foo")).andExpect(status().isBadRequest());
+    }
+
     /**
      * Vérifie que l'utilisation du header {@code Accept: application/json+pretty} permet d'afficher la réponse du
      * serveur lisible telle quelle. Pour cela, on vérifie simplement qu'il y a une différence de contenu entre un appel
@@ -55,9 +78,7 @@ public class GreetingsControllerTest {
     public void testPretty() throws InterruptedException {
         Thread[] notPretty = new Thread[10];
         Thread[] pretty = new Thread[10];
-        String resultNotPretty = "{\"content\":[{\"id\":1},{\"id\":2},{\"id\":3},{\"id\":4},{\"id\":5}]," +
-                "\"last\":true,\"totalElements\":5,\"totalPages\":1,\"size\":10,\"number\":0," +
-                "\"first\":true,\"numberOfElements\":5}";
+        String resultNotPretty = "[{\"id\":1},{\"id\":2},{\"id\":3},{\"id\":4},{\"id\":5}]";
         AtomicInteger errors = new AtomicInteger();
         AtomicInteger requests = new AtomicInteger();
         for(int i = 0; i < 10; ++i) {
@@ -68,7 +89,7 @@ public class GreetingsControllerTest {
                         MvcResult result = mockMvc.perform(
                                 get("/greetings?fields=id")
                         ).andReturn();
-                        if(!resultNotPretty.equals(result.getResponse().getContentAsString())) {
+                        if(!result.getResponse().getContentAsString().contains(resultNotPretty)) {
                             errors.incrementAndGet();
                         }
                     } catch(Exception e) {
@@ -84,7 +105,7 @@ public class GreetingsControllerTest {
                                 get("/greetings?fields=id")
                                 .accept(MediaType.APPLICATION_JSON + "+pretty")
                         ).andReturn();
-                        if(resultNotPretty.equals(result.getResponse().getContentAsString())) {
+                        if(result.getResponse().getContentAsString().contains(resultNotPretty)) {
                             errors.incrementAndGet();
                         }
                     } catch(Exception e) {

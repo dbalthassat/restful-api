@@ -1,20 +1,23 @@
+# security:
+#   basic:
+#     enabled: false
 env:
-  front:
-    url: http://localhost:3000
-  profile: dev
-security:
-  basic:
-    enabled: false
+  profile: development
 spring:
-  jackson:
-    serialization:
-    # See com.fasterxml.jackson.databind.SerializationFeature
   jpa:
     show-sql: true
     hibernate:
       ddl-auto: create
+  jackson:
+    serialization:
+    # See com.fasterxml.jackson.databind.SerializationFeature
 datasource:
   url: jdbc:postgresql://localhost:5432/restful-api
   username: postgres
   password: admin
   dataSourceClassName: org.postgresql.ds.PGSimpleDataSource
+---
+spring:
+  profiles: test
+env:
+  profile: test
