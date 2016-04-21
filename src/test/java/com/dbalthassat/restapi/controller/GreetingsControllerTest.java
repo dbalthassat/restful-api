@@ -33,7 +33,11 @@ public class GreetingsControllerTest {
     private WebApplicationContext webApplicationContext;
 
     @Before
-    public void setUp() {
+    public void before() {
+        setUp();
+    }
+
+    private void setUp() {
         this.mockMvc = webAppContextSetup(webApplicationContext).build();
     }
 
@@ -45,10 +49,10 @@ public class GreetingsControllerTest {
      * Au vu de l'implémentation, on lance plusieurs threads qui exécutent plusieurs requêtes en parallèle pour s'assurer
      * que le résultat est toujours cohérent et qu'on récupère bien le résultat attendu.
      *
-     * @throws Exception
+     * @throws InterruptedException
      */
     @Test
-    public void testPretty() throws Exception {
+    public void testPretty() throws InterruptedException {
         Thread[] notPretty = new Thread[10];
         Thread[] pretty = new Thread[10];
         String resultNotPretty = "{\"content\":[{\"id\":1},{\"id\":2},{\"id\":3},{\"id\":4},{\"id\":5}]," +

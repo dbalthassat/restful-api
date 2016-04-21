@@ -11,7 +11,7 @@ import java.time.LocalDateTime;
 
 @MappedSuperclass
 @EntityListeners(AuditingEntityListener.class)
-// TODO CreatedBy et LastModifiedBy
+// TODO CreatedBy et LastModifiedBy with authenticated user
 public abstract class ApiEntity implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "SG")
