@@ -1,6 +1,6 @@
 package com.dbalthassat.restapi.config;
 
-import com.dbalthassat.restapi.exception.clientError.IllegalParameterException;
+import com.dbalthassat.restapi.exception.clientError.badRequest.FieldDoesNotExistException;
 import com.dbalthassat.restapi.utils.ArrayUtils;
 import com.mysema.query.types.expr.BooleanExpression;
 import com.mysema.query.types.path.NumberPath;
@@ -82,7 +82,7 @@ public class HandleGetParametersInterceptor extends HandlerInterceptorAdapter {
         try {
             field = Class.forName(className).getDeclaredField(fieldName).get(resource);
         } catch (IllegalAccessException | NoSuchFieldException | ClassNotFoundException e) {
-            throw new IllegalParameterException("The field '%s' does not exist.", fieldName);
+            throw new FieldDoesNotExistException(fieldName);
         }
         return field;
     }

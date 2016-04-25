@@ -17,6 +17,8 @@ import org.springframework.context.annotation.ComponentScan;
 })
 public class Application extends SpringBootServletInitializer {
     public static final String BASE_PACKAGE = "com.dbalthassat.restapi";
+    public static final String DEV_ENVIRONMENT = "development";
+
     /**
      * Start the web app on a Spring Boot's embedded Tomcat.
      *

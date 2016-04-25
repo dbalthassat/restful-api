@@ -1,6 +1,9 @@
 package com.dbalthassat.restapi.entity;
 
-import org.hibernate.annotations.Type;
+import com.dbalthassat.restapi.config.LocalDateTimeISO8601Deserializer;
+import com.dbalthassat.restapi.config.LocalDateTimeISO8601Serializer;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
@@ -18,11 +21,13 @@ public abstract class ApiEntity implements Serializable {
     private Long id;
 
     @CreatedDate
-    @Type(type = "org.jadira.usertype.dateandtime.threeten.PersistentLocalDateTime")
+    @JsonDeserialize(using = LocalDateTimeISO8601Deserializer.class)
+    @JsonSerialize(using = LocalDateTimeISO8601Serializer.class)
     private LocalDateTime createdAt;
 
     @LastModifiedDate
-    @Type(type = "org.jadira.usertype.dateandtime.threeten.PersistentLocalDateTime")
+    @JsonDeserialize(using = LocalDateTimeISO8601Deserializer.class)
+    @JsonSerialize(using = LocalDateTimeISO8601Serializer.class)
     private LocalDateTime updatedAt;
 
     public Long getId() {

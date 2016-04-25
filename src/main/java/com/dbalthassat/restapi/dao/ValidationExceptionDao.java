@@ -1,7 +1,8 @@
 package com.dbalthassat.restapi.dao;
 
-import com.dbalthassat.restapi.exception.ExceptionCode;
+import com.dbalthassat.restapi.exception.ExceptionValues;
 import com.dbalthassat.restapi.exception.ValidationCode;
+import org.springframework.http.HttpStatus;
 import org.springframework.validation.FieldError;
 
 import java.util.LinkedList;
@@ -12,7 +13,7 @@ public class ValidationExceptionDao extends ExceptionDao {
     private final List<ErrorDao> errors;
 
     public ValidationExceptionDao(List<FieldError> allErrors) {
-        super("Validation failed.", ExceptionCode.UNPROCESSABLE_ENTITY.code(), ExceptionCode.VALIDATION.code());
+        super(ExceptionValues.VALIDATION.getMessage(), ExceptionValues.VALIDATION.getCode(), HttpStatus.UNPROCESSABLE_ENTITY.value());
         errors = new LinkedList<>();
         errors.addAll(allErrors.stream()
                 .map(ValidationExceptionDao::createErrorDao).collect(Collectors.toList()));

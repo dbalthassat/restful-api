@@ -1,7 +1,7 @@
 package com.dbalthassat.restapi.controller;
 
 import com.dbalthassat.restapi.entity.Greetings;
-import com.dbalthassat.restapi.exception.clientError.IllegalParameterException;
+import com.dbalthassat.restapi.exception.clientError.badRequest.IdMustBeNumericException;
 import com.dbalthassat.restapi.service.GreetingsService;
 import com.dbalthassat.restapi.utils.HttpUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,7 +14,6 @@ import javax.validation.Valid;
 @RestController
 @RequestMapping("/greetings")
 // TODO versioning, cf http://www.vinaysahni.com/best-practices-for-a-pragmatic-restful-api
-// TODO add an alias
 // TODO rate limiting with authenticated user
 public class GreetingsController {
     private static final String TEMPLATE = "Hello, %s!";
@@ -46,14 +45,14 @@ public class GreetingsController {
 
     @SuppressWarnings("MVCPathVariableInspection")
     @ResponseBody
-    @RequestMapping(value = "/{id:^(?![0-9]+).*}", method = RequestMethod.GET)
+    @RequestMapping(value = "/{id:(?![0-9]+).*}", method = RequestMethod.GET)
     public Greetings getBadRequest() {
-        throw new IllegalParameterException("A greeting id must be numeric.");
+        throw new IdMustBeNumericException();
     }
 
     @ResponseBody
     @RequestMapping(method = RequestMethod.POST, consumes = "application/json")
-    public ResponseEntity<Greetings> post(HttpServletRequest request, @Valid @RequestBody(required = false) Greetings greetings) {
+    public ResponseEntity<Greetings> post(HttpServletRequest request, @Valid @RequestBody Greetings greetings) {
         greetings = service.createGreeting(String.format(TEMPLATE, greetings.getName()));
         return HttpUtils.buildPostResponse(request, greetings);
     }

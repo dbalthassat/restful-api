@@ -1,125 +1,51 @@
 package com.dbalthassat.restapi.controller;
 
-import com.dbalthassat.restapi.config.Application;
 import com.dbalthassat.restapi.entity.Greetings;
-import com.dbalthassat.restapi.entity.Pageable;
-import com.dbalthassat.restapi.utils.JacksonUtils;
-import org.junit.Before;
+import com.dbalthassat.restapi.exception.clientError.notFound.IdNotFoundException;
+import com.dbalthassat.restapi.service.GreetingsService;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.slf4j.Logger;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.SpringApplicationConfiguration;
-import org.springframework.http.MediaType;
-import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.springframework.test.context.web.WebAppConfiguration;
-import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.MvcResult;
-import org.springframework.web.context.WebApplicationContext;
-
-import java.util.concurrent.atomic.AtomicInteger;
+import org.mockito.Mockito;
 
 import static org.junit.Assert.assertEquals;
-import static org.slf4j.LoggerFactory.getLogger;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-import static org.springframework.test.web.servlet.setup.MockMvcBuilders.webAppContextSetup;
 
-@SuppressWarnings("unchecked")
-@RunWith(SpringJUnit4ClassRunner.class)
-@SpringApplicationConfiguration(classes = Application.class)
-@WebAppConfiguration
-@ActiveProfiles("test")
+/**
+ * Tests unitaires sur la classe GreetingsController
+ */
 public class GreetingsControllerTest {
-    private static final Logger LOGGER = getLogger(GreetingsControllerTest.class);
+    private static final Greetings SAMPLE_GREETING = new Greetings("name", "description");
 
-    private MockMvc mockMvc;
-
-    @Autowired
-    private WebApplicationContext webApplicationContext;
-
-    @Before
-    public void before() {
-        setUp();
-    }
-
-    private void setUp() {
-        this.mockMvc = webAppContextSetup(webApplicationContext).build();
-    }
-
+    /**
+     * Teste la méthode get()
+     * Si l'objet existe, doit le renvoyer tel quel
+     */
     @Test
-    public void testNoResultGetAll() throws Exception {
-        Pageable<Greetings> response = JacksonUtils.getResponse(mockMvc.perform(get("/greetings?fields=id")).andReturn(), Pageable.class);
-        assertEquals(0, response.getTotalElements());
-    }
-
-    @Test
-    public void testNoResultGetOne() throws Exception {
-        mockMvc.perform(get("/greetings/1")).andExpect(status().isNotFound());
-    }
-
-    @Test
-    public void testNoResultGetWithBadId() throws Exception {
-        mockMvc.perform(get("/greetings/foo")).andExpect(status().isBadRequest());
+    public void testSimpleGet() {
+        assertEquals(SAMPLE_GREETING, getMockedController().get(1L));
     }
 
     /**
-     * Vérifie que l'utilisation du header {@code Accept: application/json+pretty} permet d'afficher la réponse du
-     * serveur lisible telle quelle. Pour cela, on vérifie simplement qu'il y a une différence de contenu entre un appel
-     * get standard et un appel get avec le header.
-     *
-     * Au vu de l'implémentation, on lance plusieurs threads qui exécutent plusieurs requêtes en parallèle pour s'assurer
-     * que le résultat est toujours cohérent et qu'on récupère bien le résultat attendu.
-     *
-     * @throws InterruptedException
+     * Teste la méthode get()
+     * Si l'objet n'existe pas, doit lancer une IdNotFoundException
      */
-    @Test
-    public void testPretty() throws InterruptedException {
-        Thread[] notPretty = new Thread[10];
-        Thread[] pretty = new Thread[10];
-        String resultNotPretty = "[{\"id\":1},{\"id\":2},{\"id\":3},{\"id\":4},{\"id\":5}]";
-        AtomicInteger errors = new AtomicInteger();
-        AtomicInteger requests = new AtomicInteger();
-        for(int i = 0; i < 10; ++i) {
-            notPretty[i] = new Thread(() -> {
-                for(int j = 0; j < 100; ++j) {
-                    requests.incrementAndGet();
-                    try {
-                        MvcResult result = mockMvc.perform(
-                                get("/greetings?fields=id")
-                        ).andReturn();
-                        if(!result.getResponse().getContentAsString().contains(resultNotPretty)) {
-                            errors.incrementAndGet();
-                        }
-                    } catch(Exception e) {
-                        LOGGER.error(e.getMessage(), e);
-                    }
-                }
-            });
-            pretty[i] = new Thread(() -> {
-                for(int j = 0; j < 100; ++j) {
-                    requests.incrementAndGet();
-                    try {
-                        MvcResult result = mockMvc.perform(
-                                get("/greetings?fields=id")
-                                .accept(MediaType.APPLICATION_JSON + "+pretty")
-                        ).andReturn();
-                        if(result.getResponse().getContentAsString().contains(resultNotPretty)) {
-                            errors.incrementAndGet();
-                        }
-                    } catch(Exception e) {
-                        LOGGER.error(e.getMessage(), e);
-                    }
-                }
-            });
-            notPretty[i].start();
-            pretty[i].start();
-        }
-        for(int i = 0; i < 10; ++i) {
-            notPretty[i].join();
-            pretty[i].join();
-        }
-        assertEquals("The result is not acceptable. " + errors.get() + " errors for " + requests.get() + " requests.", 0, errors.get());
+    @Test(expected = IdNotFoundException.class)
+    public void testNotFound() {
+        getMockedController().get(2L);
+    }
+
+    /**
+     * Retourne un GreetingsController qui contient un GreetingsService mocké pour les tests.
+     *
+     * Ce service effectue les actions suivantes :
+     * - findOne(1L) : renvoie {"name":"name", "description":"description"}
+     * - findOne(2L) : lance une NotFoundException
+     *
+     * @return l'objet GreetingsController
+     */
+    private GreetingsController getMockedController() {
+        GreetingsService service = Mockito.mock(GreetingsService.class);
+        GreetingsController controller = new GreetingsController(service);
+        Mockito.when(service.findOne(1L)).thenReturn(SAMPLE_GREETING);
+        Mockito.when(service.findOne(2L)).thenThrow(new IdNotFoundException(2L));
+        return controller;
     }
 }

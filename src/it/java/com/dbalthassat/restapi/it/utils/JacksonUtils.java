@@ -1,4 +1,4 @@
-package com.dbalthassat.restapi.utils;
+package com.dbalthassat.restapi.it.utils;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.test.web.servlet.MvcResult;

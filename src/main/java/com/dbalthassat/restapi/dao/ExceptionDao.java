@@ -1,25 +1,22 @@
 package com.dbalthassat.restapi.dao;
 
 import com.dbalthassat.restapi.exception.ApiException;
-import com.dbalthassat.restapi.exception.ExceptionCode;
 
 public class ExceptionDao {
-    private final String message;
-    private final int status;
-    private final int code;
+    private String message;
+    private int status;
+    private int code;
+
+    /**
+     * Pour les tests uniquement.
+     */
+    public ExceptionDao() {
+    }
 
     public ExceptionDao(ApiException exception) {
         this.message = exception.getMessage();
         this.status = exception.status().value();
-        this.code = exception.code().code();
-    }
-
-    public ExceptionDao(Throwable exception) {
-        this(exception.getMessage());
-    }
-
-    public ExceptionDao(String message) {
-        this(message, ExceptionCode.BAD_REQUEST.code());
+        this.code = exception.code();
     }
 
     public ExceptionDao(String message, int status) {
@@ -42,5 +39,17 @@ public class ExceptionDao {
 
     public int getCode() {
         return code;
+    }
+
+    public void setMessage(String message) {
+        this.message = message;
+    }
+
+    public void setStatus(int status) {
+        this.status = status;
+    }
+
+    public void setCode(int code) {
+        this.code = code;
     }
 }
