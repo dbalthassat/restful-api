@@ -40,4 +40,26 @@ public class Greetings extends  ApiEntity {
     public void setDescription(String description) {
         this.description = description;
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        if (!super.equals(o)) return false;
+        Greetings greetings = (Greetings) o;
+        return name != null
+                    ? name.equals(greetings.name)
+                    : greetings.name == null
+                && (description != null
+                    ? description.equals(greetings.description)
+                    : greetings.description == null);
+    }
+
+    @Override
+    public int hashCode() {
+        int result = super.hashCode();
+        result = 31 * result + (name != null ? name.hashCode() : 0);
+        result = 31 * result + (description != null ? description.hashCode() : 0);
+        return result;
+    }
 }

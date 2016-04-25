@@ -16,7 +16,7 @@ import javax.validation.Valid;
 // TODO versioning, cf http://www.vinaysahni.com/best-practices-for-a-pragmatic-restful-api
 // TODO rate limiting with authenticated user
 public class GreetingsController {
-    private static final String TEMPLATE = "Hello, %s!";
+    static final String TEMPLATE = "Hello, %s!";
 
     private final GreetingsService service;
 
@@ -53,7 +53,8 @@ public class GreetingsController {
     @ResponseBody
     @RequestMapping(method = RequestMethod.POST, consumes = "application/json")
     public ResponseEntity<Greetings> post(HttpServletRequest request, @Valid @RequestBody Greetings greetings) {
-        greetings = service.createGreeting(String.format(TEMPLATE, greetings.getName()));
+        greetings.setName(String.format(TEMPLATE, greetings.getName()));
+        greetings = service.createGreeting(greetings);
         return HttpUtils.buildPostResponse(request, greetings);
     }
 

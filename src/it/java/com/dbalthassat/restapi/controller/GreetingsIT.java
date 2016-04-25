@@ -1,12 +1,13 @@
-package com.dbalthassat.restapi.it;
+package com.dbalthassat.restapi.controller;
 
 import com.dbalthassat.restapi.config.Application;
 import com.dbalthassat.restapi.dao.ExceptionDao;
+import com.dbalthassat.restapi.dao.ValidationExceptionDao;
 import com.dbalthassat.restapi.entity.Greetings;
+import com.dbalthassat.restapi.entity.Pageable;
 import com.dbalthassat.restapi.exception.ExceptionValues;
-import com.dbalthassat.restapi.it.entity.Pageable;
-import com.dbalthassat.restapi.it.utils.JacksonUtils;
 import com.dbalthassat.restapi.repository.GreetingsRepository;
+import com.dbalthassat.restapi.utils.JacksonUtils;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -150,9 +151,55 @@ public class GreetingsIT {
         assertEquals(ExceptionValues.REQUEST_BODY_IS_MISSING.getCode(), response.getCode());
     }
 
+    /**
+     * Teste le retour du endpoint POST /greetings avec un corps non valide ({})
+     *
+     * Le code retour de la réponse doit être 400
+     *
+     * @throws Exception
+     */
+    @Test
+    public void testPostWithInvalidBody() throws Exception {
+        Greetings greetings = new Greetings();
+        MockHttpServletRequestBuilder request = createPostRequest("/greetings").content(JacksonUtils.parse(greetings));
+        MvcResult result = mockMvc.perform(request).andExpect(status().isUnprocessableEntity()).andReturn();
+        ValidationExceptionDao response = JacksonUtils.getResponse(result, ValidationExceptionDao.class);
+        assertEquals(ExceptionValues.VALIDATION.getMessage(), response.getMessage());
+        assertEquals(ExceptionValues.VALIDATION.getCode(), response.getCode());
+    }
+
+    /**
+     * Teste le retour du endpoint POST /greetings avec un corps valide ({"name":"toto","description":"test"}). Vérifie
+     * également que la ressource a bien été créée
+     *
+     * Le code retour de la réponse doit être 400
+     *
+     * @throws Exception
+     */
+    @Test
+    public void testPostWithValidBody() throws Exception {
+        Greetings greetings = new Greetings();
+        greetings.setName("toto");
+        greetings.setDescription("description");
+        MockHttpServletRequestBuilder postRequest = createPostRequest("/greetings").content(JacksonUtils.parse(greetings));
+        MvcResult postResult = mockMvc.perform(postRequest).andExpect(status().isCreated()).andReturn();
+        Greetings postResponse = JacksonUtils.getResponse(postResult, Greetings.class);
+        assertEquals(String.format(GreetingsController.TEMPLATE, "toto"), postResponse.getName());
+        assertEquals("description", postResponse.getDescription());
+        MockHttpServletRequestBuilder getRequest = get("/greetings/" + postResponse.getId());
+        MvcResult getResult = mockMvc.perform(getRequest).andExpect(status().isOk()).andReturn();
+        Greetings getResponse = JacksonUtils.getResponse(getResult, Greetings.class);
+        assertEquals(postResponse, getResponse);
+    }
+
+    /**
+     * Crée une requête post avec un corps vide et le header Content-Type égal à application/json
+     *
+     * @param req le endpoint de la requête post à créer
+     * @return la requête post
+     */
     private MockHttpServletRequestBuilder createPostRequest(String req) {
         return post(req)
-                .accept(MediaType.APPLICATION_JSON)
                 .contentType(MediaType.APPLICATION_JSON);
     }
 

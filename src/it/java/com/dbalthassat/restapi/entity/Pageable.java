@@ -1,6 +1,5 @@
-package com.dbalthassat.restapi.it.entity;
+package com.dbalthassat.restapi.entity;
 
-import com.dbalthassat.restapi.entity.ApiEntity;
 import org.springframework.data.domain.Sort;
 
 import java.util.List;

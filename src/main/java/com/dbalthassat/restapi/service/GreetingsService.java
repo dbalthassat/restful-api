@@ -8,7 +8,6 @@ import org.springframework.stereotype.Service;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 
 @Service
@@ -25,9 +24,7 @@ public class GreetingsService {
         return op.orElseThrow(() -> new IdNotFoundException(id));
     }
 
-    public Greetings createGreeting(String name) {
-        Objects.requireNonNull(name, "The name must not be null.");
-        Greetings greetings = new Greetings(name);
+    public Greetings createGreeting(Greetings greetings) {
         return repository.save(greetings);
     }
 

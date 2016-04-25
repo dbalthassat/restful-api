@@ -2,6 +2,7 @@ package com.dbalthassat.restapi.dao;
 
 import com.dbalthassat.restapi.exception.ApiException;
 
+@SuppressWarnings("unused")
 public class ExceptionDao {
     private String message;
     private int status;
