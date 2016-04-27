@@ -1,7 +1,9 @@
 package com.dbalthassat.restapi.controller;
 
 import com.dbalthassat.restapi.entity.Greetings;
+import com.dbalthassat.restapi.entity.Messages;
 import com.dbalthassat.restapi.exception.clientError.badRequest.IdMustBeNumericException;
+import com.dbalthassat.restapi.service.GreetingMessagesService;
 import com.dbalthassat.restapi.service.GreetingsService;
 import com.dbalthassat.restapi.utils.HttpUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,16 +21,24 @@ public class GreetingsController {
     static final String TEMPLATE = "Hello, %s!";
 
     private final GreetingsService service;
+    private final GreetingMessagesService messagesService;
 
     @Autowired
-    public GreetingsController(GreetingsService service) {
+    public GreetingsController(GreetingsService service, GreetingMessagesService greetingMessagesService) {
         this.service = service;
+        this.messagesService = greetingMessagesService;
     }
 
     @ResponseBody
     @RequestMapping(value = {"", "/"}, method = RequestMethod.GET)
     public Iterable<Greetings> get(HttpServletRequest request) throws Exception {
         return service.findAll(request);
+    }
+
+    @ResponseBody
+    @RequestMapping(value = {"/{id:[0-9]+}/messages"}, method = RequestMethod.GET)
+    public Iterable<Messages> getMessages(HttpServletRequest request, @PathVariable(value = "id") Long id) {
+        return messagesService.findAll(request, "greetings", id);
     }
 
     @ResponseBody

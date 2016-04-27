@@ -1,19 +1,28 @@
 package com.dbalthassat.restapi.entity;
 
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.OneToMany;
 import javax.persistence.SequenceGenerator;
 import javax.validation.constraints.NotNull;
+import java.util.LinkedList;
+import java.util.List;
+
+import static javax.persistence.CascadeType.ALL;
 
 @Entity
 @SequenceGenerator(name = "SG", sequenceName = "SEQ_GREETINGS", allocationSize = 1)
-public class Greetings extends  ApiEntity {
+public class Greetings extends ApiEntity {
     @NotNull(message = "Ce champ ne peut pas être vide")
     private String name;
 
     private String description;
 
-    @SuppressWarnings("unused")
+    @OneToMany(cascade = ALL, fetch = FetchType.LAZY)
+    private final List<GreetingMessages> messages;
+
     public Greetings() {
+        this(null);
     }
 
     public Greetings(String name) {
@@ -23,6 +32,7 @@ public class Greetings extends  ApiEntity {
     public Greetings(String name, String description) {
         this.name = name;
         this.description = description;
+        this.messages = new LinkedList<>();
     }
 
     public String getName() {
@@ -39,6 +49,10 @@ public class Greetings extends  ApiEntity {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public List<GreetingMessages> getMessages() {
+        return messages;
     }
 
     @Override

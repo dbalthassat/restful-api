@@ -43,7 +43,7 @@ public class GreetingsControllerTest {
      */
     private GreetingsController getMockedController() {
         GreetingsService service = Mockito.mock(GreetingsService.class);
-        GreetingsController controller = new GreetingsController(service);
+        GreetingsController controller = new GreetingsController(service, null);
         Mockito.when(service.findOne(1L)).thenReturn(SAMPLE_GREETING);
         Mockito.when(service.findOne(2L)).thenThrow(new IdNotFoundException(2L));
         return controller;

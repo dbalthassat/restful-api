@@ -2,9 +2,10 @@ package com.dbalthassat.restapi.config;
 
 import com.dbalthassat.restapi.exception.clientError.badRequest.FieldDoesNotExistException;
 import com.dbalthassat.restapi.utils.ArrayUtils;
-import com.mysema.query.types.expr.BooleanExpression;
-import com.mysema.query.types.path.NumberPath;
-import com.mysema.query.types.path.StringPath;
+import com.querydsl.core.BooleanBuilder;
+import com.querydsl.core.types.dsl.BooleanExpression;
+import com.querydsl.core.types.dsl.NumberPath;
+import com.querydsl.core.types.dsl.StringPath;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Component;
@@ -57,14 +58,14 @@ public class HandleGetParametersInterceptor extends HandlerInterceptorAdapter {
         String className = BASE_PACKAGE + ".Q" + resourceName.substring(0, 1).toUpperCase() + resourceName.substring(1);
         try {
             Object resource = Class.forName(className).getDeclaredField(resourceName).get(null);
-            BooleanExpression predicate = createFilter(params, className, resource);
+            BooleanBuilder predicate = createFilter(params, className, resource);
             request.setAttribute("predicate", predicate);
         } catch (IllegalAccessException | NoSuchFieldException | ClassNotFoundException e) {
             // Nothing to do, if we catch an error here, the resource does not exist and the server will send a 404.
         }
     }
 
-    private BooleanExpression createFilter(Map<String, String[]> params, String className, Object resource) {
+    private BooleanBuilder createFilter(Map<String, String[]> params, String className, Object resource) {
         List<BooleanExpression> predicates = new LinkedList<>();
         for(Map.Entry<String, String[]> param: params.entrySet()) {
             String fieldName = param.getKey();
@@ -74,7 +75,10 @@ public class HandleGetParametersInterceptor extends HandlerInterceptorAdapter {
                 predicates.add(createCondition(field, fieldValue));
             }
         }
-        return BooleanExpression.allOf(predicates.toArray(new BooleanExpression[predicates.size()]));
+        BooleanBuilder builder = new BooleanBuilder();
+        predicates.forEach(builder::and);
+        return builder;
+        //return BooleanExpression.allOf(predicates.toArray(new BooleanExpression[predicates.size()]));
     }
 
     private Object findField(String className, Object resource, String fieldName) {
