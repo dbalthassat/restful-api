@@ -2,6 +2,7 @@ package com.dbalthassat.restapi.config;
 
 import com.dbalthassat.restapi.exception.clientError.badRequest.FieldDoesNotExistException;
 import com.dbalthassat.restapi.utils.ArrayUtils;
+import com.dbalthassat.restapi.utils.SortUtils;
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.core.types.dsl.NumberPath;
@@ -14,7 +15,6 @@ import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.*;
-import java.util.stream.Collectors;
 
 // TODO gérer paramètre q
 @Component
@@ -43,8 +43,8 @@ public class HandleGetParametersInterceptor extends HandlerInterceptorAdapter {
         // TODO mettre les params en property
         int pageNumber = Integer.parseInt(pageNumberOp.orElse("1"));
         int pageSize = Integer.parseInt(pageSizeOp.orElse("10"));
-        List<Sort> sorts = createSortFromStringList(sortStringOp);
-        Sort sort = createSortFromList(sorts);
+        List<Sort> sorts = SortUtils.createSortFromStringList(sortStringOp);
+        Sort sort = SortUtils.createSortFromList(sorts);
         PageRequest pageRequest = new PageRequest(pageNumber - 1, pageSize, sort);
         request.setAttribute("pageable", pageRequest);
     }
@@ -100,41 +100,5 @@ public class HandleGetParametersInterceptor extends HandlerInterceptorAdapter {
             exp = ((NumberPath) field).longValue().eq(Long.parseLong(fieldValue));
         }
         return exp;
-    }
-
-    private static String addSortDirectionIfNeeded(String s) {
-        if (!s.startsWith("+") && !s.startsWith("-")) {
-            return "+" + s;
-        }
-        return s;
-    }
-
-    private static List<Sort> createSortFromStringList(Optional<String> sortStringOp) {
-        if(!sortStringOp.isPresent()) {
-            return Collections.emptyList();
-        }
-        String sortString = sortStringOp.get();
-        return Arrays.stream(sortString.split(",")).collect(Collectors.toList())
-                .stream()
-                .map(String::trim)
-                .map(HandleGetParametersInterceptor::addSortDirectionIfNeeded)
-                .map(HandleGetParametersInterceptor::createSortFromString)
-                .collect(Collectors.toList());
-    }
-
-    private static Sort createSortFromString(String s) {
-        return new Sort("-".equals(s.substring(0, 1)) ? Sort.Direction.DESC : Sort.Direction.ASC, s.substring(1));
-    }
-
-    private static Sort createSortFromList(List<Sort> sorts) {
-        Sort sort = null;
-        for(Sort s: sorts) {
-            if(sort == null) {
-                sort = s;
-            } else {
-                sort = sort.and(s);
-            }
-        }
-        return sort;
     }
 }

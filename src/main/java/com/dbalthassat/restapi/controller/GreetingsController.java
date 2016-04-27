@@ -38,7 +38,7 @@ public class GreetingsController {
     @ResponseBody
     @RequestMapping(value = {"/{id:[0-9]+}/messages"}, method = RequestMethod.GET)
     public Iterable<Messages> getMessages(HttpServletRequest request, @PathVariable(value = "id") Long id) {
-        return messagesService.findAll(request, "greetings", id);
+        return messagesService.findByGreetingsId(request, id);
     }
 
     @ResponseBody

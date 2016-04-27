@@ -1,6 +1,5 @@
 package com.dbalthassat.restapi.service;
 
-import com.dbalthassat.restapi.entity.GreetingMessages;
 import com.dbalthassat.restapi.entity.Messages;
 import com.dbalthassat.restapi.repository.GreetingMessagesRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,7 +17,7 @@ public class GreetingMessagesService {
         this.repository = repository;
     }
 
-    public Page<Messages> findAll(HttpServletRequest request, String fieldName, Long id) {
-        return repository.findAll(request, fieldName, id).map(GreetingMessages::getMessages);
+    public Page<Messages> findByGreetingsId(HttpServletRequest request, Long greetingsId) {
+        return repository.findByGreetingId(request, greetingsId);
     }
 }
