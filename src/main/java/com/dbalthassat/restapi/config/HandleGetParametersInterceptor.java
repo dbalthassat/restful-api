@@ -78,7 +78,6 @@ public class HandleGetParametersInterceptor extends HandlerInterceptorAdapter {
         BooleanBuilder builder = new BooleanBuilder();
         predicates.forEach(builder::and);
         return builder;
-        //return BooleanExpression.allOf(predicates.toArray(new BooleanExpression[predicates.size()]));
     }
 
     private Object findField(String className, Object resource, String fieldName) {

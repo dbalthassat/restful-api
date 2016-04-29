@@ -1,7 +1,6 @@
 package com.dbalthassat.restapi.entity;
 
-import javax.persistence.Entity;
-import javax.persistence.SequenceGenerator;
+import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 
 @Entity
@@ -12,6 +11,10 @@ public class Messages extends ApiEntity {
 
     @NotNull(message = "Ce champ ne peut pas être vide")
     private String significance;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn
+    private Greetings greetings;
 
     public Messages() {
     }
@@ -35,5 +38,13 @@ public class Messages extends ApiEntity {
 
     public void setSignificance(String significance) {
         this.significance = significance;
+    }
+
+    public Greetings getGreetings() {
+        return greetings;
+    }
+
+    public void setGreetings(Greetings greetings) {
+        this.greetings = greetings;
     }
 }

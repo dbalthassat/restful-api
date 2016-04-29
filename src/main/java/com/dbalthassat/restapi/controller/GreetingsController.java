@@ -3,8 +3,8 @@ package com.dbalthassat.restapi.controller;
 import com.dbalthassat.restapi.entity.Greetings;
 import com.dbalthassat.restapi.entity.Messages;
 import com.dbalthassat.restapi.exception.clientError.badRequest.IdMustBeNumericException;
-import com.dbalthassat.restapi.service.GreetingMessagesService;
 import com.dbalthassat.restapi.service.GreetingsService;
+import com.dbalthassat.restapi.service.MessagesService;
 import com.dbalthassat.restapi.utils.HttpUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -21,12 +21,12 @@ public class GreetingsController {
     static final String TEMPLATE = "Hello, %s!";
 
     private final GreetingsService service;
-    private final GreetingMessagesService messagesService;
+    private final MessagesService messagesService;
 
     @Autowired
-    public GreetingsController(GreetingsService service, GreetingMessagesService greetingMessagesService) {
+    public GreetingsController(GreetingsService service, MessagesService messagesService) {
         this.service = service;
-        this.messagesService = greetingMessagesService;
+        this.messagesService = messagesService;
     }
 
     @ResponseBody

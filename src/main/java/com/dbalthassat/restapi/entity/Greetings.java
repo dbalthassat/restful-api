@@ -18,8 +18,8 @@ public class Greetings extends ApiEntity {
 
     private String description;
 
-    @OneToMany(cascade = ALL, fetch = FetchType.LAZY)
-    private final List<GreetingMessages> messages;
+    @OneToMany(cascade = ALL, fetch = FetchType.LAZY, mappedBy = "greetings")
+    private final List<Messages> messages;
 
     public Greetings() {
         this(null);
@@ -51,8 +51,13 @@ public class Greetings extends ApiEntity {
         this.description = description;
     }
 
-    public List<GreetingMessages> getMessages() {
+    public List<Messages> getMessages() {
         return messages;
+    }
+
+    public void addMessage(Messages message) {
+        this.messages.add(message);
+        message.setGreetings(this);
     }
 
     @Override
