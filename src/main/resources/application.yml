@@ -1,6 +1,6 @@
-# security:
-#   basic:
-#     enabled: false
+security:
+  basic:
+    enabled: false
 env:
   profile: development
 spring:

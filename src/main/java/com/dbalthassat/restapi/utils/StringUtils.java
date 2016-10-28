@@ -27,4 +27,12 @@ public class StringUtils {
         }
         return isGetter;
     }
+
+    public static String splitAndGetElementAtIndexDesc(String str, String regex, int idx) {
+        String[] split = str.split(regex);
+        if(idx >= split.length) {
+            throw new IllegalArgumentException("The string `" + str + "` does not contain anything at index " + idx + " (split with regex: `" + regex + "`.)");
+        }
+        return split[split.length - 1 - idx];
+    }
 }

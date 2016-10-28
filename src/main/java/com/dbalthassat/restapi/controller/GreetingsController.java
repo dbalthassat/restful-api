@@ -1,10 +1,9 @@
 package com.dbalthassat.restapi.controller;
 
 import com.dbalthassat.restapi.entity.Greetings;
-import com.dbalthassat.restapi.entity.Messages;
 import com.dbalthassat.restapi.exception.clientError.badRequest.IdMustBeNumericException;
+import com.dbalthassat.restapi.repository.GreetingsRepository;
 import com.dbalthassat.restapi.service.GreetingsService;
-import com.dbalthassat.restapi.service.MessagesService;
 import com.dbalthassat.restapi.utils.HttpUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -17,28 +16,20 @@ import javax.validation.Valid;
 @RequestMapping("/greetings")
 // TODO versioning, cf http://www.vinaysahni.com/best-practices-for-a-pragmatic-restful-api
 // TODO rate limiting with authenticated user
-public class GreetingsController {
+public class GreetingsController extends GenericController<Greetings, GreetingsRepository> {
     static final String TEMPLATE = "Hello, %s!";
 
     private final GreetingsService service;
-    private final MessagesService messagesService;
 
     @Autowired
-    public GreetingsController(GreetingsService service, MessagesService messagesService) {
+    public GreetingsController(GreetingsService service) {
         this.service = service;
-        this.messagesService = messagesService;
     }
 
     @ResponseBody
     @RequestMapping(value = {"", "/"}, method = RequestMethod.GET)
     public Iterable<Greetings> get(HttpServletRequest request) throws Exception {
         return service.findAll(request);
-    }
-
-    @ResponseBody
-    @RequestMapping(value = {"/{id:[0-9]+}/messages"}, method = RequestMethod.GET)
-    public Iterable<Messages> getMessages(HttpServletRequest request, @PathVariable(value = "id") Long id) {
-        return messagesService.findByGreetingsId(request, id);
     }
 
     @ResponseBody

@@ -6,10 +6,11 @@ public enum ExceptionValues {
 	FIELD_DOES_NOT_EXIST("The field '%s' does not exist.", 40001),
 	REQUEST_BODY_IS_MISSING("Required request body is missing.", 40002),
 	WRONG_CONTENT_TYPE(String.format("The request should contains header Content-Type with value %s.", MediaType.APPLICATION_JSON_VALUE), 40003),
-	ID_MUST_BE_NUMERIC("THe id must be numeric.", 40005),
+	ID_MUST_BE_NUMERIC("The id must be numeric.", 40005),
 
 	RESOURCE_NOT_FOUND("Request method %s not supported for path %s.", 40401),
 	ID_NOT_FOUND("Resource %d not found.", 40402),
+	DATA_EMPTY_THEN_ELEMENT_NOT_FOUND("No data has been found for resource %s.", 40403),
 
 	VALIDATION("Validation failed.", 42201);
 

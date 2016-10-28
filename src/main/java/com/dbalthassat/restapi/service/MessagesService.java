@@ -18,7 +18,10 @@ public class MessagesService {
     }
 
     public Page<Messages> findByGreetingsId(HttpServletRequest request, Long greetingsId) {
-//        return repository.findByGreetingId(request, greetingsId);
-        return messagesRepository.findByGreetingId(request, greetingsId);
+        return messagesRepository.findByGreetingsId(request, greetingsId);
+    }
+
+    public Iterable<Messages> findByIdAndGreetingsId(HttpServletRequest request, Long greetingsId, Long id) {
+        return messagesRepository.findByGreetingsIdAndId(request, greetingsId, id);
     }
 }

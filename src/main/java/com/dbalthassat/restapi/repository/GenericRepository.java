@@ -1,5 +1,6 @@
 package com.dbalthassat.restapi.repository;
 
+import com.dbalthassat.restapi.entity.ApiEntity;
 import com.dbalthassat.restapi.utils.SortUtils;
 import com.querydsl.core.types.Predicate;
 import com.querydsl.core.types.dsl.BooleanExpression;
@@ -12,6 +13,7 @@ import org.springframework.util.StringUtils;
 import javax.servlet.http.HttpServletRequest;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Repository parent de tous les repository de l'application.
@@ -21,7 +23,25 @@ import java.util.List;
  * @param <T> le type d'entité à lier au repository.
  */
 @NoRepositoryBean
-public interface GenericRepository<T> extends JpaRepository<T, Long>, QueryDslPredicateExecutor<T> {
+public interface GenericRepository<T extends ApiEntity> extends JpaRepository<T, Long>, QueryDslPredicateExecutor<T> {
+    default Optional<T> findFirst() {
+        int count = (int) count();
+        if(count == 0) {
+            return Optional.empty();
+        }
+        Pageable p = new PageRequest(0, 1);
+        return Optional.of(findAll(p).getContent().get(0));
+    }
+
+    default Optional<T> findLast() {
+        int count = (int) count();
+        if(count == 0) {
+            return Optional.empty();
+        }
+        Pageable p = new PageRequest(count - 1, 1);
+        return Optional.of(findAll(p).getContent().get(0));
+    }
+
     /**
      * Récupère en base toutes les entités de type {@link T} en suivant les conditions de tri, de pagination,
      * de filtre, ainsi que la condition {@code condition) en paramètre. Si {@code fieldName} est précisé, on considère
