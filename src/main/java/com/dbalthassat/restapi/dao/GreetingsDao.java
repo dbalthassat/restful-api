@@ -1,20 +1,8 @@
 package com.dbalthassat.restapi.dao;
 
-import java.util.List;
-
-public class GreetingsDao {
-    private Long id;
+public class GreetingsDao extends GenericDao {
     private String name;
     private String description;
-    private List<String> messages;
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
 
     public String getName() {
         return name;
@@ -30,13 +18,5 @@ public class GreetingsDao {
 
     public void setDescription(String description) {
         this.description = description;
-    }
-
-    public List<String> getMessages() {
-        return messages;
-    }
-
-    public void setMessages(List<String> messages) {
-        this.messages = messages;
     }
 }

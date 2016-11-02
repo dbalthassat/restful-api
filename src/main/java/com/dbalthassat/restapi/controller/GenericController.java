@@ -1,6 +1,6 @@
 package com.dbalthassat.restapi.controller;
 
-import com.dbalthassat.restapi.entity.GenericEntity;
+import com.dbalthassat.restapi.dao.GenericDao;
 import com.dbalthassat.restapi.mapper.GenericMapper;
 import com.dbalthassat.restapi.repository.GenericRepository;
 import com.dbalthassat.restapi.service.GenericService;
@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 import java.util.List;
 
-public abstract class GenericController<ENTITY extends GenericEntity, SERVICE extends GenericService<ENTITY, ? extends GenericRepository<ENTITY>, ? extends GenericMapper<ENTITY>>> {
+public abstract class GenericController<DAO extends GenericDao, SERVICE extends GenericService<DAO, ?, ? extends GenericRepository<?>, ? extends GenericMapper<DAO, ?>>> {
     @Autowired
     private SERVICE service;
 
@@ -18,5 +18,5 @@ public abstract class GenericController<ENTITY extends GenericEntity, SERVICE ex
         return service.findAll(daoClass());
     }
 
-    protected abstract Class<?> daoClass();
+    protected abstract Class<DAO> daoClass();
 }

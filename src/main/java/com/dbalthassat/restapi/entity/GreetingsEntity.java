@@ -1,9 +1,6 @@
 package com.dbalthassat.restapi.entity;
 
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.OneToMany;
-import javax.persistence.SequenceGenerator;
+import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import java.util.LinkedList;
 import java.util.List;
@@ -11,6 +8,7 @@ import java.util.List;
 import static javax.persistence.CascadeType.ALL;
 
 @Entity
+@Table(name = "greetings")
 @SequenceGenerator(name = "SG", sequenceName = "SEQ_GREETINGS", allocationSize = 1)
 public class GreetingsEntity extends GenericEntity {
     @NotNull(message = "Ce champ ne peut pas être vide")

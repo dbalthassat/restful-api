@@ -4,6 +4,7 @@ import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 
 @Entity
+@Table(name = "messages")
 @SequenceGenerator(name = "SG", sequenceName = "SEQ_MESSAGES", allocationSize = 1)
 public class MessagesEntity extends GenericEntity {
     @NotNull(message = "Ce champ ne peut pas être vide")
