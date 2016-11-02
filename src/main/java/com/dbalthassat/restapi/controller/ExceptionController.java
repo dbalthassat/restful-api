@@ -1,7 +1,7 @@
 package com.dbalthassat.restapi.controller;
 
-import com.dbalthassat.restapi.dao.ExceptionDao;
-import com.dbalthassat.restapi.dao.ValidationExceptionDao;
+import com.dbalthassat.restapi.dao.exception.ExceptionDao;
+import com.dbalthassat.restapi.dao.exception.ValidationExceptionDao;
 import com.dbalthassat.restapi.exception.ApiException;
 import com.dbalthassat.restapi.exception.clientError.badRequest.RequestBodyMissingException;
 import org.slf4j.Logger;

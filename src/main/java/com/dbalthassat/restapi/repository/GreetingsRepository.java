@@ -1,6 +1,6 @@
 package com.dbalthassat.restapi.repository;
 
-import com.dbalthassat.restapi.entity.Greetings;
+import com.dbalthassat.restapi.entity.GreetingsEntity;
 
-public interface GreetingsRepository extends GenericRepository<Greetings> {
+public interface GreetingsRepository extends GenericRepository<GreetingsEntity> {
 }

@@ -15,7 +15,7 @@ import java.time.LocalDateTime;
 @MappedSuperclass
 @EntityListeners(AuditingEntityListener.class)
 // TODO CreatedBy et LastModifiedBy with authenticated user
-public abstract class ApiEntity implements Serializable {
+public abstract class GenericEntity implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "SG")
     private Long id;
@@ -58,8 +58,8 @@ public abstract class ApiEntity implements Serializable {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        ApiEntity apiEntity = (ApiEntity) o;
-        return id != null ? id.equals(apiEntity.id) : apiEntity.id == null;
+        GenericEntity genericEntity = (GenericEntity) o;
+        return id != null ? id.equals(genericEntity.id) : genericEntity.id == null;
 
     }
 

@@ -12,6 +12,7 @@ import org.springframework.context.annotation.ComponentScan;
 @ComponentScan({
         Application.BASE_PACKAGE + ".config",
         Application.BASE_PACKAGE + ".controller",
+        Application.BASE_PACKAGE + ".mapper",
         Application.BASE_PACKAGE + ".property",
         Application.BASE_PACKAGE + ".service"
 })

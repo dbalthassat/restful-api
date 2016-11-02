@@ -5,7 +5,7 @@ import javax.validation.constraints.NotNull;
 
 @Entity
 @SequenceGenerator(name = "SG", sequenceName = "SEQ_MESSAGES", allocationSize = 1)
-public class Messages extends ApiEntity {
+public class MessagesEntity extends GenericEntity {
     @NotNull(message = "Ce champ ne peut pas être vide")
     private String value;
 
@@ -14,12 +14,12 @@ public class Messages extends ApiEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn
-    private Greetings greetings;
+    private GreetingsEntity greetings;
 
-    public Messages() {
+    public MessagesEntity() {
     }
 
-    public Messages(String significance, String value) {
+    public MessagesEntity(String significance, String value) {
         this.significance = significance;
         this.value = value;
     }
@@ -40,11 +40,11 @@ public class Messages extends ApiEntity {
         this.significance = significance;
     }
 
-    public Greetings getGreetings() {
+    public GreetingsEntity getGreetings() {
         return greetings;
     }
 
-    public void setGreetings(Greetings greetings) {
+    public void setGreetings(GreetingsEntity greetings) {
         this.greetings = greetings;
     }
 }

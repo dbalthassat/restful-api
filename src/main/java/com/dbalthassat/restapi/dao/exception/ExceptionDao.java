@@ -1,4 +1,4 @@
-package com.dbalthassat.restapi.dao;
+package com.dbalthassat.restapi.dao.exception;
 
 import com.dbalthassat.restapi.exception.ApiException;
 

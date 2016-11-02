@@ -1,6 +1,6 @@
 package com.dbalthassat.restapi.utils;
 
-import com.dbalthassat.restapi.entity.ApiEntity;
+import com.dbalthassat.restapi.entity.GenericEntity;
 import org.slf4j.Logger;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -17,7 +17,7 @@ public class HttpUtils {
 
     private HttpUtils() {}
 
-    public static <ENTITY extends ApiEntity> ResponseEntity<ENTITY> buildPostResponse(HttpServletRequest request, ENTITY entity) {
+    public static <ENTITY extends GenericEntity> ResponseEntity<ENTITY> buildPostResponse(HttpServletRequest request, ENTITY entity) {
         HttpHeaders responseHeaders = new HttpHeaders();
         try {
             responseHeaders.setLocation(new URI(request.getRequestURL() + "/" + Long.toString(entity.getId())));

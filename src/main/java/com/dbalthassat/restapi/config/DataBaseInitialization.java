@@ -1,7 +1,7 @@
 package com.dbalthassat.restapi.config;
 
-import com.dbalthassat.restapi.entity.Greetings;
-import com.dbalthassat.restapi.entity.Messages;
+import com.dbalthassat.restapi.entity.GreetingsEntity;
+import com.dbalthassat.restapi.entity.MessagesEntity;
 import com.dbalthassat.restapi.property.EnvProperty;
 import com.dbalthassat.restapi.repository.GreetingsRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,17 +27,17 @@ public class DataBaseInitialization {
     }
 
     public void initGreetings() {
-        List<Greetings> greetings = new LinkedList<>();
-        Greetings withMessage = new Greetings("world");
-        withMessage.addMessage(new Messages("HIGH", "high message"));
-        withMessage.addMessage(new Messages("LOW", "low message"));
+        List<GreetingsEntity> greetings = new LinkedList<>();
+        GreetingsEntity withMessage = new GreetingsEntity("world");
+        withMessage.addMessage(new MessagesEntity("HIGH", "high message"));
+        withMessage.addMessage(new MessagesEntity("LOW", "low message"));
         greetings.add(withMessage);
-        Greetings withMessage2 = new Greetings("tata");
-        withMessage2.addMessage(new Messages("MEDIUM", "medium message"));
+        GreetingsEntity withMessage2 = new GreetingsEntity("tata");
+        withMessage2.addMessage(new MessagesEntity("MEDIUM", "medium message"));
         greetings.add(withMessage2);
-        greetings.add(new Greetings("toto", "A small description"));
-        greetings.add(new Greetings("a", "B"));
-        greetings.add(new Greetings("titi"));
+        greetings.add(new GreetingsEntity("toto", "A small description"));
+        greetings.add(new GreetingsEntity("a", "B"));
+        greetings.add(new GreetingsEntity("titi"));
         greetingsRepository.save(greetings);
     }
 }

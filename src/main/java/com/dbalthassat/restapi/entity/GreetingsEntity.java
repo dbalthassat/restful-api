@@ -12,24 +12,24 @@ import static javax.persistence.CascadeType.ALL;
 
 @Entity
 @SequenceGenerator(name = "SG", sequenceName = "SEQ_GREETINGS", allocationSize = 1)
-public class Greetings extends ApiEntity {
+public class GreetingsEntity extends GenericEntity {
     @NotNull(message = "Ce champ ne peut pas être vide")
     private String name;
 
     private String description;
 
     @OneToMany(cascade = ALL, fetch = FetchType.LAZY, mappedBy = "greetings")
-    private final List<Messages> messages;
+    private final List<MessagesEntity> messages;
 
-    public Greetings() {
+    public GreetingsEntity() {
         this(null);
     }
 
-    public Greetings(String name) {
+    public GreetingsEntity(String name) {
         this(name, null);
     }
 
-    public Greetings(String name, String description) {
+    public GreetingsEntity(String name, String description) {
         this.name = name;
         this.description = description;
         this.messages = new LinkedList<>();
@@ -51,13 +51,12 @@ public class Greetings extends ApiEntity {
         this.description = description;
     }
 
-    public List<Messages> getMessages() {
+    public List<MessagesEntity> getMessages() {
         return messages;
     }
 
-    public void addMessage(Messages message) {
+    public void addMessage(MessagesEntity message) {
         this.messages.add(message);
-        message.setGreetings(this);
     }
 
     @Override
@@ -65,7 +64,7 @@ public class Greetings extends ApiEntity {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         if (!super.equals(o)) return false;
-        Greetings greetings = (Greetings) o;
+        GreetingsEntity greetings = (GreetingsEntity) o;
         return name != null
                     ? name.equals(greetings.name)
                     : greetings.name == null
