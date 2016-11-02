@@ -1,7 +1,12 @@
 package com.dbalthassat.restapi.utils;
 
+import javax.servlet.http.HttpServletRequest;
 import java.lang.reflect.Method;
 import java.util.Arrays;
+import java.util.Collection;
+import java.util.List;
+import java.util.StringJoiner;
+import java.util.stream.Collectors;
 
 public class StringUtils {
     private final static String[] GETTER_PREFIXES = {"get", "is"};
@@ -34,5 +39,23 @@ public class StringUtils {
             throw new IllegalArgumentException("The string `" + str + "` does not contain anything at index " + idx + " (split with regex: `" + regex + "`.)");
         }
         return split[split.length - 1 - idx];
+    }
+
+    public static URL createURLExcludingGetParams(HttpServletRequest request, Collection<String> exclude) {
+        String url = request.getRequestURL().toString();
+        String queryString = request.getQueryString();
+        String[] split = queryString.split("&");
+        List<String> params = Arrays.stream(split)
+                .map(e -> {
+                    String[] paramAndValue = e.split("=");
+                    return paramAndValue[0];
+                })
+                .filter(e -> !exclude.contains(e)).collect(Collectors.toList());
+        if(!params.isEmpty()) {
+            StringJoiner joiner = new StringJoiner("&");
+            params.forEach(joiner::add);
+            url += "?" + joiner.toString();
+        }
+        return new URL(url, params.size());
     }
 }

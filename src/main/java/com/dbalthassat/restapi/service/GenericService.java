@@ -5,8 +5,8 @@ import com.dbalthassat.restapi.entity.GenericEntity;
 import com.dbalthassat.restapi.mapper.GenericMapper;
 import com.dbalthassat.restapi.repository.GenericRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-
-import java.util.List;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 
 public abstract class GenericService<
             DAO extends GenericDao,
@@ -20,8 +20,9 @@ public abstract class GenericService<
     @Autowired
     private MAPPER mapper;
 
-    public List<DAO> findAll(Class<DAO> clazz) {
-        List<ENTITY> list = repository.findAll();
-        return mapper.map(list, clazz);
+    public Page<DAO> findAll(Class<DAO> clazz, int page, int size) {
+        PageRequest req = new PageRequest(page, size);
+        Page<ENTITY> res = repository.findAll(req);
+        return res.map(e -> mapper.map(e, clazz));
     }
 }

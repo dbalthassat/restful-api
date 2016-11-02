@@ -16,6 +16,9 @@ datasource:
   username: postgres
   password: admin
   dataSourceClassName: org.postgresql.ds.PGSimpleDataSource
+rest:
+  defaultPage: 1
+  defaultSize: 2
 ---
 spring:
   profiles: test
