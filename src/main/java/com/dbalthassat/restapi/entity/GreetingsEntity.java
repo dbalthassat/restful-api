@@ -1,5 +1,8 @@
 package com.dbalthassat.restapi.entity;
 
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
+
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import java.util.LinkedList;
@@ -16,7 +19,8 @@ public class GreetingsEntity extends GenericEntity {
 
     private String description;
 
-    @OneToMany(cascade = ALL, fetch = FetchType.LAZY, mappedBy = "greetings")
+    @Fetch(FetchMode.SUBSELECT)
+    @OneToMany(cascade = ALL, fetch = FetchType.EAGER, mappedBy = "greetings")
     private final List<MessagesEntity> messages;
 
     public GreetingsEntity() {

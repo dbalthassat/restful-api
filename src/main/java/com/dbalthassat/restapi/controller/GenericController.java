@@ -23,16 +23,26 @@ public abstract class GenericController<DAO extends GenericDao, SERVICE extends 
     private RestProperty restProperty;
 
     @RequestMapping({"", "/"})
-    public List<?> findAll(HttpServletRequest request, HttpServletResponse response,
+    public List<DAO> findAll(HttpServletRequest request, HttpServletResponse response,
                            @RequestParam(value = "page", required = false) Integer page,
                            @RequestParam(value = "size", required = false) Integer size) {
         page = page == null ? restProperty.getDefaultPage() : page;
         size = size == null ? restProperty.getDefaultSize() : size;
-        Page<?> result = service.findAll(daoClass(), page - 1, size);
-        List<?> content = result.getContent();
+        Page<DAO> result = service.findAll(daoClass(), page - 1, size);
+        List<DAO> content = result.getContent();
         HttpUtils.buildCountHeader(response, content);
         HttpUtils.buildLinkHeader(request, response, page, size, result);
         return content;
+    }
+
+    @RequestMapping("first")
+    public DAO findFirst() {
+        return service.findFirst(daoClass());
+    }
+
+    @RequestMapping("last")
+    public DAO findLast() {
+        return service.findLast(daoClass());
     }
 
     protected abstract Class<DAO> daoClass();
