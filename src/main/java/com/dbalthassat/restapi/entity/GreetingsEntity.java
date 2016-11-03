@@ -55,6 +55,7 @@ public class GreetingsEntity extends GenericEntity {
 
     public void addMessage(MessagesEntity message) {
         this.messages.add(message);
+        message.setGreetings(this);
     }
 
     @Override

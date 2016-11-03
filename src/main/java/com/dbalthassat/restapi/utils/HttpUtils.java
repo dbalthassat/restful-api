@@ -40,7 +40,7 @@ public class HttpUtils {
     public static void buildLinkHeader(HttpServletRequest request, HttpServletResponse response, int currentPage, int currentSize, Page<?> result) {
         StringJoiner header = new StringJoiner(", ");
         URL url = StringUtils.createURLExcludingGetParams(request, Arrays.asList("page", "size"));
-        String linkPrefix = url.getURL() + (url.getCountParams() == 0 ? "?" : "");
+        String linkPrefix = url.toString() + (url.getCountParams() == 0 ? "?" : "&");
         if(currentPage != 1) {
             header.add("<" + linkPrefix + "page=1&size=" + currentSize + ">; rel=\"first\"");
         }

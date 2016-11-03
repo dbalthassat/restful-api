@@ -6,6 +6,7 @@ import com.dbalthassat.restapi.utils.GenericUtils;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.ParameterizedType;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -21,14 +22,50 @@ public interface GenericMapper<DAO extends GenericDao, ENTITY extends GenericEnt
                 Optional<Field> entityField = entityFields.stream().filter(f -> f.getName().equals(daoField.getName())).findFirst();
                 if(!entityField.isPresent()) {
                     // TODO maybe log ?
-                } else if(daoField.get(dao) == null) { // Mapping only if the field is null
-                    daoField.set(dao, entityField.get().get(entity));
+                    System.out.println("toto");
+                } else if(daoField.get(dao) == null) { // Mapping only if the entityField is null
+                    if(!(handleLists(entity, dao, daoField, entityField.get()) ||
+                            handleSameTypes(entity, dao, daoField, entityField.get()))) {
+                        System.out.println("paf");
+                    }
                 }
             }
         } catch (InstantiationException | IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
-            // TODO gestion
+            // TODO handle exception
         }
         return dao;
+    }
+
+    @SuppressWarnings("unchecked")
+    default boolean handleLists(ENTITY entity, DAO dao, Field daoField, Field entityField) throws IllegalAccessException {
+        if(entityField.getType().equals(List.class) && daoField.getType().equals(List.class)) {
+            ParameterizedType entityType = (ParameterizedType) entityField.getGenericType();
+            ParameterizedType daoType = (ParameterizedType) daoField.getGenericType();
+            List<?> entityList = (List<?>) entityField.get(entity);
+            Optional<Converter<?, ?>> op = converters().stream()
+                    .filter(c -> c.getInClass().equals(entityType.getActualTypeArguments()[0]) &&
+                                 c.getOutClass().equals(daoType.getActualTypeArguments()[0]))
+                    .findAny();
+            Converter converter = op.get();
+            try {
+                daoField.set(dao, entityList.stream()
+                        .map(converter::convert)
+                        .collect(Collectors.toList()));
+                return true;
+            } catch(Exception e) {
+                System.out.println(e);
+                // TODO log
+            }
+        }
+        return false;
+    }
+
+    default boolean handleSameTypes(ENTITY entity, DAO dao, Field daoField, Field entityField) throws IllegalAccessException {
+        if(daoField.getType().equals(entityField.getType())) {
+            daoField.set(dao, entityField.get(entity));
+            return true;
+        }
+        return false;
     }
 
     default List<DAO> mapEmptyFields(List<ENTITY> entities, Class<DAO> clazz) {
@@ -42,4 +79,6 @@ public interface GenericMapper<DAO extends GenericDao, ENTITY extends GenericEnt
     default List<DAO> map(List<ENTITY> entities, Class<DAO> clazz) {
         return mapEmptyFields(entities, clazz);
     }
+
+    List<Converter<?, ?>> converters();
 }
