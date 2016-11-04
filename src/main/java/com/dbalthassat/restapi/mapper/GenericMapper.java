@@ -1,18 +1,22 @@
 package com.dbalthassat.restapi.mapper;
 
-import com.dbalthassat.restapi.dao.GenericDao;
-import com.dbalthassat.restapi.entity.GenericEntity;
 import com.dbalthassat.restapi.utils.GenericUtils;
+import org.slf4j.Logger;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.ParameterizedType;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-public interface GenericMapper<DAO extends GenericDao, ENTITY extends GenericEntity> {
-    default DAO mapEmptyFields(ENTITY entity, Class<DAO> clazz) {
+import static org.slf4j.LoggerFactory.getLogger;
+
+public interface GenericMapper {
+    Logger LOGGER = getLogger(GenericMapper.class);
+
+    default <DAO> DAO mapEmptyFields(Object entity, Class<DAO> clazz) {
         DAO dao = null;
         try {
             dao = clazz.getConstructor().newInstance();
@@ -25,8 +29,11 @@ public interface GenericMapper<DAO extends GenericDao, ENTITY extends GenericEnt
                     System.out.println("toto");
                 } else if(daoField.get(dao) == null) { // Mapping only if the entityField is null
                     if(!(handleLists(entity, dao, daoField, entityField.get()) ||
+                            handleConverters(entity, dao, daoField, entityField.get()) ||
                             handleSameTypes(entity, dao, daoField, entityField.get()))) {
-                        System.out.println("paf");
+                        LOGGER.debug("Field " + daoField.getName()
+                                     + " of class " + daoField.getDeclaringClass().getName()
+                                     + " has not been mapped because types does not match.");
                     }
                 }
             }
@@ -36,8 +43,27 @@ public interface GenericMapper<DAO extends GenericDao, ENTITY extends GenericEnt
         return dao;
     }
 
+    default <DAO> boolean handleConverters(Object entity, DAO dao, Field daoField, Field entityField) {
+        Class<?> entityType = entityField.getType();
+        Class<?> daoType = daoField.getType();
+        Optional<Converter<?, ?>> op = converters().stream()
+                .filter(c -> c.getInClass().equals(entityType) &&
+                        c.getOutClass().equals(daoType))
+                .findAny();
+        if(op.isPresent()) {
+            Converter converter = op.get();
+            try {
+                daoField.set(dao, converter.convert(entity));
+                return true;
+            } catch (IllegalAccessException e) {
+                e.printStackTrace();
+            }
+        }
+        return false;
+    }
+
     @SuppressWarnings("unchecked")
-    default boolean handleLists(ENTITY entity, DAO dao, Field daoField, Field entityField) throws IllegalAccessException {
+    default <DAO> boolean handleLists(Object entity, DAO dao, Field daoField, Field entityField) throws IllegalAccessException {
         if(entityField.getType().equals(List.class) && daoField.getType().equals(List.class)) {
             ParameterizedType entityType = (ParameterizedType) entityField.getGenericType();
             ParameterizedType daoType = (ParameterizedType) daoField.getGenericType();
@@ -60,7 +86,7 @@ public interface GenericMapper<DAO extends GenericDao, ENTITY extends GenericEnt
         return false;
     }
 
-    default boolean handleSameTypes(ENTITY entity, DAO dao, Field daoField, Field entityField) throws IllegalAccessException {
+    default <DAO> boolean handleSameTypes(Object entity, DAO dao, Field daoField, Field entityField) throws IllegalAccessException {
         if(daoField.getType().equals(entityField.getType())) {
             daoField.set(dao, entityField.get(entity));
             return true;
@@ -68,17 +94,19 @@ public interface GenericMapper<DAO extends GenericDao, ENTITY extends GenericEnt
         return false;
     }
 
-    default List<DAO> mapEmptyFields(List<ENTITY> entities, Class<DAO> clazz) {
+    default <DAO> List<DAO> mapEmptyFields(List<Object> entities, Class<DAO> clazz) {
         return entities.stream().map(e -> map(e, clazz)).collect(Collectors.toList());
     }
 
-    default DAO map(ENTITY entity, Class<DAO> clazz) {
+    default <DAO> DAO map(Object entity, Class<DAO> clazz) {
         return mapEmptyFields(entity, clazz);
     }
 
-    default List<DAO> map(List<ENTITY> entities, Class<DAO> clazz) {
+    default <DAO> List<DAO> map(List<Object> entities, Class<DAO> clazz) {
         return mapEmptyFields(entities, clazz);
     }
 
-    List<Converter<?, ?>> converters();
+    default List<Converter<?, ?>> converters() {
+        return Collections.emptyList();
+    }
 }

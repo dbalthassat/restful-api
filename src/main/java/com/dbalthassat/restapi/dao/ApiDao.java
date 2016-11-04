@@ -7,7 +7,7 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
 import java.time.LocalDateTime;
 
-public class GenericDao {
+public class ApiDao {
     private Long id;
 
     @JsonSerialize(using = LocalDateTimeISO8601Serializer.class)

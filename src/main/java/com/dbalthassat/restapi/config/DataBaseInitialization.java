@@ -14,7 +14,7 @@ import java.util.List;
 @Configuration
 public class DataBaseInitialization {
     @Autowired
-    private GreetingsRepository greetingsRepository;
+    private GreetingsRepository testsRepository;
 
     @Autowired
     private EnvProperty envProperty;
@@ -38,6 +38,6 @@ public class DataBaseInitialization {
         greetings.add(new GreetingsEntity("toto", "A small description"));
         greetings.add(new GreetingsEntity("a", "B"));
         greetings.add(new GreetingsEntity("titi"));
-        greetingsRepository.save(greetings);
+        testsRepository.save(greetings);
     }
 }

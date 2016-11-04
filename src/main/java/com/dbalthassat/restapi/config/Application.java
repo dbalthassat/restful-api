@@ -14,7 +14,8 @@ import org.springframework.context.annotation.ComponentScan;
         Application.BASE_PACKAGE + ".controller",
         Application.BASE_PACKAGE + ".mapper",
         Application.BASE_PACKAGE + ".property",
-        Application.BASE_PACKAGE + ".service"
+        Application.BASE_PACKAGE + ".service",
+        Application.BASE_PACKAGE + ".repository"
 })
 public class Application extends SpringBootServletInitializer {
     public static final String BASE_PACKAGE = "com.dbalthassat.restapi";

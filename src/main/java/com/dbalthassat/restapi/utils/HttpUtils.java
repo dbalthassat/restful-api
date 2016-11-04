@@ -1,6 +1,6 @@
 package com.dbalthassat.restapi.utils;
 
-import com.dbalthassat.restapi.entity.GenericEntity;
+import com.dbalthassat.restapi.entity.ApiEntity;
 import org.slf4j.Logger;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpHeaders;
@@ -12,6 +12,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Arrays;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.StringJoiner;
 
@@ -22,7 +23,7 @@ public class HttpUtils {
 
     private HttpUtils() {}
 
-    public static <ENTITY extends GenericEntity> ResponseEntity<ENTITY> buildPostResponse(HttpServletRequest request, ENTITY entity) {
+    public static <ENTITY extends ApiEntity> ResponseEntity<ENTITY> buildPostResponse(HttpServletRequest request, ENTITY entity) {
         HttpHeaders responseHeaders = new HttpHeaders();
         try {
             responseHeaders.setLocation(new URI(request.getRequestURL() + "/" + Long.toString(entity.getId())));
@@ -54,5 +55,32 @@ public class HttpUtils {
             header.add("<" + linkPrefix + "page=" + result.getTotalPages() + "&size=" + currentSize + ">; rel=\"last\"");
         }
         response.setHeader("Link", header.toString());
+    }
+
+    public static List<Resource> findResources(String requestUri) {
+        String[] split = requestUri.split("/");
+        split = Arrays.copyOfRange(split, 1, split.length);
+        List<Resource> result = new LinkedList<>();
+        String currentResource = null;
+        for (String s : split) {
+            if(currentResource == null) {
+                if(s.matches("[a-z]+")) { // TODO faire une vraie regex
+                    currentResource = s;
+                } else {
+                    throw new IllegalStateException("Uri " + requestUri + " is not valid.");
+                }
+            } else {
+                try {
+                    result.add(new Resource(StringUtils.capitalizeFirstLetter(currentResource), Long.parseLong(s)));
+                } catch(NumberFormatException e) {
+                    throw new IllegalStateException("Uri " + requestUri + " is not valid.");
+                }
+                currentResource = null;
+            }
+        }
+        if(currentResource != null) {
+            result.add(new Resource(StringUtils.capitalizeFirstLetter(currentResource)));
+        }
+        return result;
     }
 }

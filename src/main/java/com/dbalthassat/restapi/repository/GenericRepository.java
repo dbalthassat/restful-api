@@ -1,16 +1,39 @@
 package com.dbalthassat.restapi.repository;
 
-import com.dbalthassat.restapi.entity.GenericEntity;
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.repository.NoRepositoryBean;
+import com.dbalthassat.restapi.exception.clientError.notFound.IdNotFoundException;
+import org.springframework.stereotype.Repository;
 
-/**
- * Repository parent de tous les repository de l'application.
- *
- * Expose des méthodes génériques à ne pas réécrire pour chaque entité.
- *
- * @param <T> le type d'entité à lier au repository.
- */
-@NoRepositoryBean
-public interface GenericRepository<T extends GenericEntity> extends JpaRepository<T, Long> {
+import javax.persistence.EntityManager;
+import javax.persistence.NoResultException;
+import javax.persistence.PersistenceContext;
+import javax.persistence.Query;
+import java.util.List;
+
+@Repository
+public class GenericRepository {
+    @PersistenceContext
+    private EntityManager em;
+
+    @SuppressWarnings("unchecked")
+    public List<Object> findAll(String entityName) {
+        Query query = em.createQuery("SELECT e FROM " + entityName + "Entity e");
+        return query.getResultList();
+    }
+
+    public Object findOne(String entityName, Long id) {
+        Query query = em.createQuery("SELECT e FROM " + entityName + "Entity e WHERE e.id = :id");
+        query.setParameter("id", id);
+        try {
+            return query.getSingleResult();
+        } catch(NoResultException e) {
+            throw new IdNotFoundException(id);
+        }
+    }
+
+    @SuppressWarnings("unchecked")
+    public List<Object> findAllWithParent(String parent, Long parentId, String resource) {
+        Query query = em.createQuery("SELECT e FROM " + parent + "Entity p JOIN p." + resource.toLowerCase() + " e WHERE p.id = :parentId");
+        query.setParameter("parentId", parentId);
+        return query.getResultList();
+    }
 }

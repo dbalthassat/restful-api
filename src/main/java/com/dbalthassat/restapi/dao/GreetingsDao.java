@@ -2,7 +2,7 @@ package com.dbalthassat.restapi.dao;
 
 import java.util.List;
 
-public class GreetingsDao extends GenericDao {
+public class GreetingsDao extends ApiDao {
     private String name;
     private String description;
     private List<String> messages;

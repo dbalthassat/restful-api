@@ -13,14 +13,14 @@ import static javax.persistence.CascadeType.ALL;
 @Entity
 @Table(name = "greetings")
 @SequenceGenerator(name = "SG", sequenceName = "SEQ_GREETINGS", allocationSize = 1)
-public class GreetingsEntity extends GenericEntity {
+public class GreetingsEntity extends ApiEntity {
     @NotNull(message = "Ce champ ne peut pas être vide")
     private String name;
 
     private String description;
 
     @Fetch(FetchMode.SUBSELECT)
-    @OneToMany(cascade = ALL, fetch = FetchType.EAGER, mappedBy = "greetings")
+    @OneToMany(cascade = ALL, fetch = FetchType.EAGER)
     private final List<MessagesEntity> messages;
 
     public GreetingsEntity() {
@@ -59,7 +59,6 @@ public class GreetingsEntity extends GenericEntity {
 
     public void addMessage(MessagesEntity message) {
         this.messages.add(message);
-        message.setGreetings(this);
     }
 
     @Override
