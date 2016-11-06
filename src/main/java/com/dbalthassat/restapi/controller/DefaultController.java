@@ -1,5 +1,6 @@
 package com.dbalthassat.restapi.controller;
 
+import com.dbalthassat.restapi.dao.ApiDao;
 import com.dbalthassat.restapi.exception.clientError.notFound.ResourceNotFoundException;
 import com.dbalthassat.restapi.service.GenericService;
 import org.slf4j.Logger;
@@ -29,27 +30,27 @@ public class DefaultController {
 	}
 
 	@RequestMapping(value = "/*")
-	public List<?> findAll(HttpServletRequest request) {
+	public List<? extends ApiDao> findAll(HttpServletRequest request) {
 		String uri = request.getRequestURI();
 		return service.findAll(uri);
 	}
 
 	@RequestMapping(value = "/*/{id:[1-9][0-9]*}")
-	public Object findOne(HttpServletRequest request) {
+	public ApiDao findOne(HttpServletRequest request) {
 		String uri = request.getRequestURI();
 		return service.findOne(uri);
 	}
 
-	@RequestMapping(value = "/*/{id:[1-9][0-9]*}/*")
-	public List<?> findAllWithParent(HttpServletRequest request) {
+	@RequestMapping(value = "/*/{parentId:[1-9][0-9]*}/*")
+	public List<? extends ApiDao> findAllWithParent(HttpServletRequest request) {
 		String uri = request.getRequestURI();
 		return service.findAllWithParent(uri);
 	}
 
 	@RequestMapping(value = "/*/{parentId:[1-9][0-9]*}/*/{id:[1-9][0-9]*}")
-	public String test3() {
-		// TODO
-		return "test3";
+	public ApiDao test3(HttpServletRequest request) {
+		String uri = request.getRequestURI();
+		return service.findOneWithParent(uri);
 	}
 
 	@RequestMapping(value = "/**")

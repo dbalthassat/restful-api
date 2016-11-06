@@ -71,7 +71,7 @@ public class HttpUtils {
                 }
             } else {
                 try {
-                    result.add(new Resource(StringUtils.capitalizeFirstLetter(currentResource), Long.parseLong(s)));
+                    result.add(new Resource(currentResource, Long.parseLong(s)));
                 } catch(NumberFormatException e) {
                     throw new IllegalStateException("Uri " + requestUri + " is not valid.");
                 }
@@ -79,7 +79,7 @@ public class HttpUtils {
             }
         }
         if(currentResource != null) {
-            result.add(new Resource(StringUtils.capitalizeFirstLetter(currentResource)));
+            result.add(new Resource(currentResource));
         }
         return result;
     }

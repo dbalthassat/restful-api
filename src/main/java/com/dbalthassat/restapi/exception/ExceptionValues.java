@@ -9,7 +9,7 @@ public enum ExceptionValues {
 	ID_MUST_BE_NUMERIC("The id must be numeric.", 40005),
 
 	RESOURCE_NOT_FOUND("Request method %s not supported for path %s.", 40401),
-	ID_NOT_FOUND("Resource %d not found.", 40402),
+	ID_NOT_FOUND("Resource %s not found.", 40402),
 	DATA_EMPTY_THEN_ELEMENT_NOT_FOUND("No data has been found for resource %s.", 40403),
 	EMPTY_RESOURCE("No data available for this resource.", 40404),
 
