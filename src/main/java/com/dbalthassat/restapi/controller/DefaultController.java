@@ -31,10 +31,9 @@ public class DefaultController {
 		throw new RequestMethodNotFoundException(method, uri);
 	}
 
-	@RequestMapping(value = "/*", method = RequestMethod.GET)
-	public List<? extends ApiDao> findAll(HttpServletRequest request) {
-		String uri = request.getRequestURI();
-		return service.findAll(uri);
+	@RequestMapping(value = "/{resource:[a-z]+}", method = RequestMethod.GET)
+	public List<? extends ApiDao> findAll(@PathVariable("resource") String resource) {
+		return service.findAll(resource);
 	}
 
 	@RequestMapping(value = "/{resource:[a-z]+}/first", method = RequestMethod.GET)
@@ -43,21 +42,20 @@ public class DefaultController {
 	}
 
 	@RequestMapping(value = "/{resource:[a-z]+}/{id:[1-9][0-9]*}", method = RequestMethod.GET)
-	public ApiDao findOne(HttpServletRequest request) {
-		String uri = request.getRequestURI();
-		return service.findOne(uri);
+	public ApiDao findOne(@PathVariable("resource") String resource, @PathVariable("id") Long id) {
+		return service.findOne(resource, id);
 	}
 
-	@RequestMapping(value = "/*/{parentId:[1-9][0-9]*}/*", method = RequestMethod.GET)
-	public List<? extends ApiDao> findAllWithParent(HttpServletRequest request) {
-		String uri = request.getRequestURI();
-		return service.findAllWithParent(uri);
+	@RequestMapping(value = "/{parent:[a-z]+}/{parentId:[1-9][0-9]*}/{resource:[a-z]+}", method = RequestMethod.GET)
+	public List<? extends ApiDao> findAllWithParent(@PathVariable("parent") String parent, @PathVariable("parentId") Long parentId,
+													@PathVariable("resource") String resource) {
+		return service.findAll(parent, parentId, resource);
 	}
 
-	@RequestMapping(value = "/*/{parentId:[1-9][0-9]*}/*/{id:[1-9][0-9]*}", method = RequestMethod.GET)
-	public ApiDao test3(HttpServletRequest request) {
-		String uri = request.getRequestURI();
-		return service.findOneWithParent(uri);
+	@RequestMapping(value = "/{parent:[a-z]+}/{parentId:[1-9][0-9]*}/{resource:[a-z]+}/{id:[1-9][0-9]*}", method = RequestMethod.GET)
+	public ApiDao findOneWithParent(@PathVariable("parent") String parent, @PathVariable("parentId") Long parentId,
+									@PathVariable("resource") String resource, @PathVariable("id") Long id) {
+		return service.findOneWithParent(parent, parentId, resource, id);
 	}
 
 	@RequestMapping(value = "/**")

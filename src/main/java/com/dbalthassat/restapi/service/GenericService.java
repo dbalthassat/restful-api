@@ -6,8 +6,6 @@ import com.dbalthassat.restapi.entity.ApiEntity;
 import com.dbalthassat.restapi.exception.clientError.notFound.ResourceNotFoundException;
 import com.dbalthassat.restapi.repository.GenericRepository;
 import com.dbalthassat.restapi.utils.EntityMapper;
-import com.dbalthassat.restapi.utils.HttpUtils;
-import com.dbalthassat.restapi.utils.Resource;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -26,10 +24,8 @@ public class GenericService {
     @Autowired
     private EntityMappers mappers;
 
-    public List<? extends ApiDao> findAll(String uri) {
-        List<Resource> resources = HttpUtils.findResources(uri);
-        String entityName = resources.get(0).getResource();
-        EntityMapper entityMapper = findEntityMapper(entityName);
+    public List<? extends ApiDao> findAll(String resource) {
+        EntityMapper entityMapper = findEntityMapper(resource);
         List<? extends ApiEntity> entities = repository.findAll(entityMapper);
         return entityMapper.map(entities);
     }
@@ -40,35 +36,23 @@ public class GenericService {
         return entityMapper.map(entity);
     }
 
-    public ApiDao findOne(String uri) {
-        List<Resource> resources = HttpUtils.findResources(uri);
-        String entityName = resources.get(0).getResource();
-        Long id = resources.get(0).getId();
-        EntityMapper entityMapper = findEntityMapper(entityName);
+    public ApiDao findOne(String resource, Long id) {
+        EntityMapper entityMapper = findEntityMapper(resource);
         ApiEntity entity = repository.findOne(entityMapper, id);
         return entityMapper.map(entity);
     }
 
-    public List<? extends ApiDao> findAllWithParent(String uri) {
-        List<Resource> resources = HttpUtils.findResources(uri);
-        String parent = resources.get(0).getResource();
-        Long parentId = resources.get(0).getId();
-        String entityName = resources.get(1).getResource();
+    public List<? extends ApiDao> findAll(String parent, Long parentId, String resource) {
         EntityMapper entityMapperParent = findEntityMapper(parent);
-        EntityMapper entityMapper = findEntityMapper(entityName);
+        EntityMapper entityMapper = findEntityMapper(resource);
         List<? extends ApiEntity> entities = repository.findAllWithParent(entityMapperParent, parentId, entityMapper);
         return entityMapper.map(entities);
     }
 
 
-    public ApiDao findOneWithParent(String uri) {
-        List<Resource> resources = HttpUtils.findResources(uri);
-        String parent = resources.get(0).getResource();
-        Long parentId = resources.get(0).getId();
-        String entityName = resources.get(1).getResource();
-        Long id = resources.get(1).getId();
+    public ApiDao findOneWithParent(String parent, Long parentId, String resource, Long id) {
         EntityMapper entityMapperParent = findEntityMapper(parent);
-        EntityMapper entityMapper = findEntityMapper(entityName);
+        EntityMapper entityMapper = findEntityMapper(resource);
         ApiEntity entities = repository.findOneWithParent(entityMapperParent, parentId, entityMapper, id);
         return entityMapper.map(entities);
     }
