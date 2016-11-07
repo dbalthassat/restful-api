@@ -1,6 +1,7 @@
 package com.dbalthassat.restapi.repository;
 
 import com.dbalthassat.restapi.entity.ApiEntity;
+import com.dbalthassat.restapi.exception.clientError.notFound.DataEmptyThenElementNotFoundException;
 import com.dbalthassat.restapi.exception.clientError.notFound.IdNotFoundException;
 import com.dbalthassat.restapi.utils.EntityMapper;
 import org.springframework.stereotype.Repository;
@@ -10,7 +11,6 @@ import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 import java.util.List;
-import java.util.StringJoiner;
 
 @Repository
 public class GenericRepository {
@@ -23,13 +23,23 @@ public class GenericRepository {
         return query.getResultList();
     }
 
+    public ApiEntity findFirst(EntityMapper entityMapper) {
+        Query query = em.createQuery("SELECT e FROM " + entityMapper.getEntityClass().getName() + " e");
+        query.setMaxResults(1);
+        try {
+            return (ApiEntity) query.getSingleResult();
+        } catch(NoResultException e) {
+            throw new DataEmptyThenElementNotFoundException(entityMapper.getResource());
+        }
+    }
+
     public ApiEntity findOne(EntityMapper entityMapper, Long id) {
         Query query = em.createQuery("SELECT e FROM " + entityMapper.getEntityClass().getName() + " e WHERE e.id = :id");
         query.setParameter("id", id);
         try {
             return (ApiEntity) query.getSingleResult();
         } catch(NoResultException e) {
-            throw new IdNotFoundException("/" + entityMapper.getResource() + "/" + id);
+            throw new IdNotFoundException(entityMapper.getResource(), id);
         }
     }
 
@@ -49,9 +59,15 @@ public class GenericRepository {
         try {
             return (ApiEntity) query.getSingleResult();
         } catch(NoResultException e) {
-            StringJoiner errorMessage = new StringJoiner("/");
-            errorMessage.add("").add(parent.getResource()).add(Long.toString(parentId)).add(resource.getResource()).add(Long.toString(id));
-            throw new IdNotFoundException(errorMessage.toString());
+            Query count = em.createQuery("SELECT COUNT(p.id) FROM " + parent.getEntityClass().getName() + " p " +
+                                         "WHERE p.id = :parentId");
+            count.setParameter("parentId", parentId);
+            Long result = (Long) count.getSingleResult();
+            if(result == 0) {
+                throw new IdNotFoundException(parent.getResource(), parentId);
+            } else {
+                throw new IdNotFoundException(resource.getResource(), id);
+            }
         }
     }
 }
