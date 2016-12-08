@@ -9,6 +9,7 @@ import com.dbalthassat.restapi.utils.EntityMapper;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -18,6 +19,7 @@ import static org.slf4j.LoggerFactory.getLogger;
 public class GenericService {
     private static final Logger LOGGER = getLogger(GenericService.class);
     private static final String LOG_ENTITY_NOT_FOUND = "No entity mapper found for resource {}. Did you forgot to declare it in class EntityMappers?";
+
     @Autowired
     private GenericRepository repository;
 
@@ -42,13 +44,19 @@ public class GenericService {
         return entityMapper.map(entity);
     }
 
+	@Transactional
+    public void deleteOne(String resource, Long id) {
+        EntityMapper entityMapper = findEntityMapper(resource);
+        repository.deleteOne(entityMapper, id);
+    }
+
+
     public List<? extends ApiDao> findAll(String parent, Long parentId, String resource) {
         EntityMapper entityMapperParent = findEntityMapper(parent);
         EntityMapper entityMapper = findEntityMapper(resource);
         List<? extends ApiEntity> entities = repository.findAllWithParent(entityMapperParent, parentId, entityMapper);
         return entityMapper.map(entities);
     }
-
 
     public ApiDao findOneWithParent(String parent, Long parentId, String resource, Long id) {
         EntityMapper entityMapperParent = findEntityMapper(parent);

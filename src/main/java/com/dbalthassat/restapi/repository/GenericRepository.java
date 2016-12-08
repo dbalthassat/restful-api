@@ -43,6 +43,13 @@ public class GenericRepository {
         }
     }
 
+    public void deleteOne(EntityMapper entityMapper, Long id) {
+        ApiEntity entity = findOne(entityMapper, id);
+        Query query = em.createQuery("DELETE FROM " + entityMapper.getEntityClass().getName() + " e WHERE e.id = :id");
+        query.setParameter("id", id);
+        query.executeUpdate();
+    }
+
     @SuppressWarnings("unchecked")
     public List<? extends ApiEntity> findAllWithParent(EntityMapper parent, Long parentId, EntityMapper resource) {
         Query query = em.createQuery("SELECT e FROM " + parent.getEntityClass().getName() + " p " +

@@ -5,10 +5,8 @@ import com.dbalthassat.restapi.exception.clientError.notFound.RequestMethodNotFo
 import com.dbalthassat.restapi.service.GenericService;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
@@ -44,6 +42,12 @@ public class DefaultController {
 	@RequestMapping(value = "/{resource:[a-z]+}/{id:[1-9][0-9]*}", method = RequestMethod.GET)
 	public ApiDao findOne(@PathVariable("resource") String resource, @PathVariable("id") Long id) {
 		return service.findOne(resource, id);
+	}
+
+	@RequestMapping(value = "/{resource:[a-z]+}/{id:[1-9][0-9]*}", method = RequestMethod.DELETE)
+	@ResponseStatus(HttpStatus.NO_CONTENT)
+	public void deleteOne(@PathVariable("resource") String resource, @PathVariable("id") Long id) {
+		service.deleteOne(resource, id);
 	}
 
 	@RequestMapping(value = "/{parent:[a-z]+}/{parentId:[1-9][0-9]*}/{resource:[a-z]+}", method = RequestMethod.GET)
