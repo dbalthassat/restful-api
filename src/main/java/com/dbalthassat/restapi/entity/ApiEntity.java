@@ -1,5 +1,6 @@
 package com.dbalthassat.restapi.entity;
 
+import com.dbalthassat.restapi.config.LocalDateTimePersistenceConverter;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
@@ -20,10 +21,12 @@ public abstract class ApiEntity implements Serializable {
 
     @NotNull
     @CreatedDate
+    @Convert(converter = LocalDateTimePersistenceConverter.class)
     private LocalDateTime createdAt;
 
     @NotNull
     @LastModifiedDate
+    @Convert(converter = LocalDateTimePersistenceConverter.class)
     private LocalDateTime updatedAt;
 
     public Long getId() {

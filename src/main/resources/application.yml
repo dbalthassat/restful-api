@@ -1,6 +1,3 @@
-security:
-  basic:
-    enabled: false
 env:
   profile: development
 spring:
@@ -14,7 +11,7 @@ spring:
 datasource:
   url: jdbc:postgresql://localhost:5432/restful-api
   username: postgres
-  password: admin
+  password: postgres
   dataSourceClassName: org.postgresql.ds.PGSimpleDataSource
 rest:
   defaultPage: 1

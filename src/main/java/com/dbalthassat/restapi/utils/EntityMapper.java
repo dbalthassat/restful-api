@@ -9,10 +9,10 @@ import java.util.List;
 public class EntityMapper {
     private final String resource;
     private final Class<? extends ApiEntity> entityClass;
-    private final ApiDao dao;
+    private final Class<? extends ApiDao> dao;
     private final GenericMapper mapper;
 
-    public EntityMapper(String resource, Class<? extends ApiEntity> entityClass, ApiDao dao, GenericMapper mapper) {
+    public EntityMapper(String resource, Class<? extends ApiEntity> entityClass, Class<? extends ApiDao> dao, GenericMapper mapper) {
         this.resource = resource;
         this.entityClass = entityClass;
         this.dao = dao;
@@ -28,11 +28,11 @@ public class EntityMapper {
     }
 
     public <E extends ApiEntity> ApiDao map(E entity) {
-        return mapper.mapEntity(entity, dao.getClass());
+        return mapper.mapEntity(entity, dao);
     }
 
     @SuppressWarnings("unchecked")
     public List<? extends ApiDao> map(List<? extends ApiEntity> entities) {
-                return mapper.mapEntities(entities, dao.getClass());
+                return mapper.mapEntities(entities, dao);
     }
 }

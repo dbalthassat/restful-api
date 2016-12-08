@@ -15,16 +15,16 @@ import java.util.Optional;
 
 @Component
 public class EntityMappers {
-    private final static List<EntityMapper> mappers;
+    private final static List<EntityMapper> MAPPERS;
 
     static {
-        mappers = new LinkedList<>();
-        mappers.add(new EntityMapper("greetings", GreetingsEntity.class, new GreetingsDao(), new GreetingsDaoMapper()));
-        mappers.add(new EntityMapper("messages", MessagesEntity.class, new MessagesDao(), new MessagesDaoMapper()));
+        MAPPERS = new LinkedList<>();
+        MAPPERS.add(new EntityMapper("greetings", GreetingsEntity.class, GreetingsDao.class, new GreetingsDaoMapper()));
+        MAPPERS.add(new EntityMapper("messages", MessagesEntity.class, MessagesDao.class, new MessagesDaoMapper()));
     }
 
     public Optional<EntityMapper> findMapperWithName(String resourceName) {
-        return mappers.stream()
+        return MAPPERS.stream()
                       .filter(m -> m.getResource().equals(resourceName))
                       .findAny();
     }
