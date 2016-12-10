@@ -3,9 +3,12 @@ package com.dbalthassat.restapi.service;
 import com.dbalthassat.restapi.config.EntityMappers;
 import com.dbalthassat.restapi.dao.ApiDao;
 import com.dbalthassat.restapi.entity.ApiEntity;
+import com.dbalthassat.restapi.exception.clientError.badRequest.InvalidRequestBodyException;
 import com.dbalthassat.restapi.exception.clientError.notFound.ResourceNotFoundException;
+import com.dbalthassat.restapi.exception.serverError.JsonFormatException;
+import com.dbalthassat.restapi.mapper.EntityMapper;
 import com.dbalthassat.restapi.repository.GenericRepository;
-import com.dbalthassat.restapi.utils.EntityMapper;
+import com.dbalthassat.restapi.utils.JacksonUtils;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -22,9 +25,6 @@ public class GenericService {
 
     @Autowired
     private GenericRepository repository;
-
-    @Autowired
-    private EntityMappers mappers;
 
     public List<? extends ApiDao> findAll(String resource) {
         EntityMapper entityMapper = findEntityMapper(resource);
@@ -44,12 +44,24 @@ public class GenericService {
         return entityMapper.map(entity);
     }
 
+    public ApiDao createOne(String resource, String body) {
+        EntityMapper entityMapper = findEntityMapper(resource);
+        try {
+            ApiDao dao = (ApiDao) JacksonUtils.convert(body, entityMapper.getDaoClass());
+            ApiEntity entity = entityMapper.map(dao);
+            ApiEntity one = repository.persist(entity);
+            return entityMapper.map(one);
+        } catch(JsonFormatException ex) {
+            throw new InvalidRequestBodyException();
+        }
+    }
+
+
 	@Transactional
     public void deleteOne(String resource, Long id) {
         EntityMapper entityMapper = findEntityMapper(resource);
         repository.deleteOne(entityMapper, id);
     }
-
 
     public List<? extends ApiDao> findAll(String parent, Long parentId, String resource) {
         EntityMapper entityMapperParent = findEntityMapper(parent);
@@ -66,7 +78,7 @@ public class GenericService {
     }
 
     private EntityMapper findEntityMapper(String entityName) {
-        return mappers.findMapperWithName(entityName).orElseThrow(() -> {
+        return EntityMappers.findMapperWithName(entityName).orElseThrow(() -> {
             LOGGER.debug(LOG_ENTITY_NOT_FOUND, entityName);
             return new ResourceNotFoundException(entityName);
         });

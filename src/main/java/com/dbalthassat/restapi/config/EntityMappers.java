@@ -1,19 +1,19 @@
 package com.dbalthassat.restapi.config;
 
+import com.dbalthassat.restapi.dao.ApiDao;
 import com.dbalthassat.restapi.dao.GreetingsDao;
 import com.dbalthassat.restapi.dao.MessagesDao;
+import com.dbalthassat.restapi.entity.ApiEntity;
 import com.dbalthassat.restapi.entity.GreetingsEntity;
 import com.dbalthassat.restapi.entity.MessagesEntity;
+import com.dbalthassat.restapi.mapper.EntityMapper;
 import com.dbalthassat.restapi.mapper.GreetingsDaoMapper;
 import com.dbalthassat.restapi.mapper.MessagesDaoMapper;
-import com.dbalthassat.restapi.utils.EntityMapper;
-import org.springframework.stereotype.Component;
 
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
 
-@Component
 public class EntityMappers {
     private final static List<EntityMapper> MAPPERS;
 
@@ -23,9 +23,15 @@ public class EntityMappers {
         MAPPERS.add(new EntityMapper("messages", MessagesEntity.class, MessagesDao.class, new MessagesDaoMapper()));
     }
 
-    public Optional<EntityMapper> findMapperWithName(String resourceName) {
+    public static Optional<EntityMapper> findMapperWithName(String resourceName) {
         return MAPPERS.stream()
                       .filter(m -> m.getResource().equals(resourceName))
+                      .findAny();
+    }
+
+    public static Optional<EntityMapper> findWithClasses(Class<? extends ApiEntity> entityClass, Class<? extends ApiDao> daoClass) {
+        return MAPPERS.stream()
+                      .filter(m -> m.getDaoClass().equals(daoClass) && m.getEntityClass().equals(entityClass))
                       .findAny();
     }
 }

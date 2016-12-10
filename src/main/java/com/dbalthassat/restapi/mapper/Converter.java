@@ -2,26 +2,32 @@ package com.dbalthassat.restapi.mapper;
 
 import java.util.function.Function;
 
-public class Converter<IN, OUT> {
-    private final Class<IN> inClass;
-    private final Class<OUT> outClass;
-    private final Function<IN, OUT> converter;
+public class Converter<LEFT, RIGHT> {
+    private final Class<LEFT> inClass;
+    private final Class<RIGHT> outClass;
+    private final Function<LEFT, RIGHT> aToB;
+    private final Function<RIGHT, LEFT> bToA;
 
-    public Converter(Class<IN> inClass, Class<OUT> outClass, Function<IN, OUT> converter) {
+    public Converter(Class<LEFT> inClass, Class<RIGHT> outClass, Function<LEFT, RIGHT> aToB, Function<RIGHT, LEFT> bToA) {
         this.inClass = inClass;
         this.outClass = outClass;
-        this.converter = converter;
+        this.aToB = aToB;
+        this.bToA = bToA;
     }
 
-    public Class<IN> getInClass() {
+    public Class<LEFT> getInClass() {
         return inClass;
     }
 
-    public Class<OUT> getOutClass() {
+    public Class<RIGHT> getOutClass() {
         return outClass;
     }
 
-    public OUT convert(IN obj) {
-        return converter.apply(obj);
+    public RIGHT convertRight(LEFT obj) {
+        return aToB.apply(obj);
+    }
+
+    public LEFT convertLeft(RIGHT obj) {
+        return bToA.apply(obj);
     }
 }

@@ -3,8 +3,9 @@ package com.dbalthassat.restapi.repository;
 import com.dbalthassat.restapi.entity.ApiEntity;
 import com.dbalthassat.restapi.exception.clientError.notFound.DataEmptyThenElementNotFoundException;
 import com.dbalthassat.restapi.exception.clientError.notFound.IdNotFoundException;
-import com.dbalthassat.restapi.utils.EntityMapper;
+import com.dbalthassat.restapi.mapper.EntityMapper;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
@@ -41,6 +42,12 @@ public class GenericRepository {
         } catch(NoResultException e) {
             throw new IdNotFoundException(entityMapper.getResource(), id);
         }
+    }
+
+	@Transactional
+    public ApiEntity persist(ApiEntity entity) {
+		em.persist(entity);
+        return entity;
     }
 
     public void deleteOne(EntityMapper entityMapper, Long id) {

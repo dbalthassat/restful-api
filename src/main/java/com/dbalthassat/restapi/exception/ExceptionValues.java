@@ -7,6 +7,7 @@ public enum ExceptionValues {
 	REQUEST_BODY_IS_MISSING("Required request body is missing.", 40002),
 	WRONG_CONTENT_TYPE(String.format("The request should contains header Content-Type with value %s.", MediaType.APPLICATION_JSON_VALUE), 40003),
 	ID_MUST_BE_NUMERIC("The id must be numeric.", 40005),
+	INVALID_REQUEST_BODY("The request body is invalid. (TODO redirection vers la doc)", 40006),
 
 	REQUEST_METHOD_NOT_FOUND("Request method %s not supported for path %s.", 40401),
 	RESOURCE_NOT_FOUND("Resource %s not found.", 40402),

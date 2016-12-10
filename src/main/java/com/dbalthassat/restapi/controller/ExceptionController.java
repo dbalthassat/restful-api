@@ -14,6 +14,8 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.Random;
+
 
 @ControllerAdvice(annotations = RestController.class)
 public class ExceptionController {
@@ -37,9 +39,11 @@ public class ExceptionController {
 		return exceptionHandler(new RequestBodyMissingException());
 	}
 
+	// TODO externaliser les messages
 	@ExceptionHandler(Throwable.class)
 	public ResponseEntity<ExceptionDao> exceptionHandler(Throwable exception) {
-		LOGGER.error(exception.getMessage(), exception);
-		return new ResponseEntity<>(new ExceptionDao(exception.toString(), HttpStatus.BAD_REQUEST.value()), HttpStatus.BAD_REQUEST);
+		int code = Integer.parseInt("500" + Integer.toString(Math.abs(new Random().nextInt() % 10000)));
+		LOGGER.error("Error " + code + ": " + exception.getMessage(), exception);
+		return new ResponseEntity<>(new ExceptionDao("Une erreur technique est survenue. Merci de contacter l'administrateur du site avec le code d'erreur suivant : " + code, code), HttpStatus.INTERNAL_SERVER_ERROR);
 	}
 }

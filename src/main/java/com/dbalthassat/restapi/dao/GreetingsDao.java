@@ -5,7 +5,7 @@ import java.util.List;
 public class GreetingsDao extends ApiDao {
     private String name;
     private String description;
-    private List<String> messages;
+    private List<MessagesDao> messages;
 
     public String getName() {
         return name;
@@ -23,11 +23,11 @@ public class GreetingsDao extends ApiDao {
         this.description = description;
     }
 
-    public List<String> getMessages() {
+    public List<MessagesDao> getMessages() {
         return messages;
     }
 
-    public void setMessages(List<String> messages) {
+    public void setMessages(List<MessagesDao> messages) {
         this.messages = messages;
     }
 }

@@ -9,7 +9,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
+import java.io.IOException;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static org.slf4j.LoggerFactory.getLogger;
 
@@ -42,6 +44,12 @@ public class DefaultController {
 	@RequestMapping(value = "/{resource:[a-z]+}/{id:[1-9][0-9]*}", method = RequestMethod.GET)
 	public ApiDao findOne(@PathVariable("resource") String resource, @PathVariable("id") Long id) {
 		return service.findOne(resource, id);
+	}
+
+	@RequestMapping(value = "/{resource:[a-z]+}", method = RequestMethod.POST)
+	public ApiDao createOne(@PathVariable("resource") String resource, HttpServletRequest req) throws IOException {
+		String body = req.getReader().lines().collect(Collectors.joining());
+		return service.createOne(resource, body);
 	}
 
 	@RequestMapping(value = "/{resource:[a-z]+}/{id:[1-9][0-9]*}", method = RequestMethod.DELETE)
